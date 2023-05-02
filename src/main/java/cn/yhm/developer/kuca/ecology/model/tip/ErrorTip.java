@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ErrorTip {
 
-    @JsonProperty(value = "tip", index = 2)
+    @JsonProperty(value = "tip")
     private String tip;
 
     ErrorTip(String tip) {
@@ -18,6 +18,8 @@ public class ErrorTip {
     }
 
     /**
+     * 构建ErrorTip
+     *
      * @param tip 提示信息
      * @return {@link ErrorTip}
      */

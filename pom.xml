@@ -19,17 +19,19 @@
     <name>Kuca Ecology</name>
     <description>Kuca Ecology 项目</description>
 
+    <!--版本管理-->
     <properties>
         <!--项目编码-->
         <project.encoding>UTF-8</project.encoding>
-        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <!--Maven 最低运行版本-->
         <maven.version>3.8.0</maven.version>
         <!--OpenJDK 最低运行版本-->
         <jdk.version>11.0.2</jdk.version>
+        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.version>11</maven.compiler.version>
     </properties>
 
     <!--引入依赖-->
@@ -84,29 +86,58 @@
 
     <!--build-->
     <build>
+        <!--资源-->
+        <resources>
+            <!--把src/main/java下指定文件拷贝到classes类路径下-->
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <!--把src/main/resource下指定文件拷贝到classes类路径下-->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.yaml</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
-            <!-- spring-boot-maven-plugin -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>repackage</id>
-                        <configuration>
-                            <excludeDevtools>true</excludeDevtools>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- maven-compiler-plugin -->
+            <!--maven-compiler-plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
+                    <!--源码Java版本-->
                     <source>${maven.compiler.source}</source>
+                    <!--目标文件Java版本-->
                     <target>${maven.compiler.target}</target>
+                    <!--测试源码Java版本-->
+                    <testSource>${maven.compiler.source}</testSource>
+                    <!--测试目标文件Java版本-->
+                    <testTarget>${maven.compiler.target}</testTarget>
+                    <!--编码-->
+                    <encoding>${project.encoding}</encoding>
+                    <!--显示告警-->
+                    <showWarnings>true</showWarnings>
+                    <fork>true</fork>
+                    <!--指定Maven编译时的Java版本-->
+                    <compilerVersion>${maven.compiler.version}</compilerVersion>
+                    <compilerArgs>
+                        <!--启用所有推荐的警告-->
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <!--maven-resources-plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
                     <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>
@@ -114,25 +145,43 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>${maven-source-plugin.version}</version>
-                <configuration>
-                    <attach>true</attach>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>attach-sources</id>
+                        <id>make-sources</id>
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+            </plugin>
+            <!--maven-javadoc-plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-javadoc</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>javadoc-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <attach>true</attach>
+                    <encoding>UTF-8</encoding>
+                    <charset>UTF-8</charset>
+                    <docencoding>UTF-8</docencoding>
+                </configuration>
             </plugin>
             <!--maven-enforcer-plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven-enforcer-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -147,9 +196,11 @@
                     <!--规则检查不通过就构建失败;Default:false-->
                     <failFast>true</failFast>
                     <rules>
+                        <!--Maven最低版本-->
                         <requireMavenVersion>
                             <version>${maven.version}</version>
                         </requireMavenVersion>
+                        <!--JDK最低版本-->
                         <requireJavaVersion>
                             <version>${jdk.version}</version>
                         </requireJavaVersion>
@@ -164,6 +215,7 @@
                     </rules>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

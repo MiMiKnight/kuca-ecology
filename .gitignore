@@ -2,4 +2,5 @@
 .idea/
 target/
 *.iml
+*.class
 *.orig

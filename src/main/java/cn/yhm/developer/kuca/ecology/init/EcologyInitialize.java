@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class EcologyInitialize implements CommandLineRunner {
 
-    private RequestResponseHandlerContainer handlerContainer;
+    private HandlerContainer handlerContainer;
 
     private HandlerInterceptorContainer<?, ?, ?, ?> handlerInterceptorContainer;
 
     @Autowired
-    public void setHandlerContainer(RequestResponseHandlerContainer handlerContainer) {
+    public void setHandlerContainer(HandlerContainer handlerContainer) {
         this.handlerContainer = handlerContainer;
     }
 

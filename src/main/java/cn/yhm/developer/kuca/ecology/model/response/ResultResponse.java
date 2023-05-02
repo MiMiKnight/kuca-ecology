@@ -18,10 +18,10 @@ import java.time.ZonedDateTime;
 public class ResultResponse<T> implements EcologyResponse {
 
     /**
-     * HTTP 状态码
+     * HTTP响应状态码
      */
-    @JsonProperty(value = "http_status", index = 1)
-    private Integer httpStatus;
+    @JsonProperty(value = "status_code", index = 1)
+    private int statusCode;
 
     /**
      * 接口响应时间戳

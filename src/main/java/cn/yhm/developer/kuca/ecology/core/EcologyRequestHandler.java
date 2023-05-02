@@ -4,12 +4,12 @@ import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
 import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
 
 /**
- * 处理器接口
+ * 请求处理器接口
  *
  * @author victor2015yhm@gmail.com
  * @since 2022-10-06 18:41:11
  */
-public interface EcologyHandleable<R extends EcologyRequest, T extends EcologyResponse> {
+public interface EcologyRequestHandler<R extends EcologyRequest, T extends EcologyResponse> {
 
     /**
      * 处理方法
@@ -19,6 +19,5 @@ public interface EcologyHandleable<R extends EcologyRequest, T extends EcologyRe
      * @throws Exception 异常
      */
     void handle(R request, T response) throws Exception;
-
 
 }

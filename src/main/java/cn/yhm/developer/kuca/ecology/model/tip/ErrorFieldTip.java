@@ -8,10 +8,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author victor2015yhm@gmail.com
  * @since 2023-03-11 00:02:03
  */
-
 public class ErrorFieldTip extends ErrorTip {
 
-    @JsonProperty(value = "field", index = 1)
+    @JsonProperty(value = "field")
     private String field;
 
 
@@ -21,6 +20,8 @@ public class ErrorFieldTip extends ErrorTip {
     }
 
     /**
+     * 构建ErrorFieldTip
+     *
      * @param field 字段名称
      * @param tip   提示信息
      * @return {@link ErrorFieldTip}

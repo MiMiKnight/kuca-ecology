@@ -13,11 +13,11 @@ public interface EcologyHandlerInterceptor extends Ordered, Comparable<EcologyHa
     /**
      * 排序比较
      *
-     * @param o 被比较对象
+     * @param interceptor 被比较对象
      * @return int
      */
     @Override
-    default int compareTo(EcologyHandlerInterceptor o) {
-        return Integer.compare(this.getOrder(), o.getOrder());
+    default int compareTo(EcologyHandlerInterceptor interceptor) {
+        return Integer.compare(this.getOrder(), interceptor.getOrder());
     }
 }

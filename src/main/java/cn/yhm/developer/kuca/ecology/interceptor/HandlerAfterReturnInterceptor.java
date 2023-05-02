@@ -4,7 +4,7 @@ import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
 import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
 
 /**
- * Handler前置拦截器接口
+ * Handler后置拦截器接口
  *
  * @author victor2015yhm@gmail.com
  * @since 2023-03-15 18:14:28

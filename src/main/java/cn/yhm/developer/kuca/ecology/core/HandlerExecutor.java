@@ -1,7 +1,7 @@
 package cn.yhm.developer.kuca.ecology.core;
 
+import cn.yhm.developer.kuca.ecology.init.HandlerContainer;
 import cn.yhm.developer.kuca.ecology.init.HandlerInterceptorContainer;
-import cn.yhm.developer.kuca.ecology.init.RequestResponseHandlerContainer;
 import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
 import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
 import cn.yhm.developer.kuca.ecology.model.response.ResultResponse;
@@ -20,9 +20,17 @@ import java.time.ZonedDateTime;
  */
 @Slf4j
 @Component
-public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse, H extends EcologyHandleable<R, T>> {
+public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse, H extends EcologyRequestHandler<R, T>> {
 
-    private RequestResponseHandlerContainer handlerContainer;
+    /**
+     * 异常信息常量
+     */
+    private interface ExceptionMessage {
+        String MSG_001 = "The handler is not exist or not managed by spring.";
+        String MSG_002 = "The class object of response is not exist.";
+    }
+
+    private HandlerContainer handlerContainer;
 
     private HandlerInterceptorContainer<R, T, ?, ?> handlerInterceptorContainer;
 
@@ -32,7 +40,7 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
     }
 
     @Autowired
-    public void setHandlerContainer(RequestResponseHandlerContainer handlerContainer) {
+    public void setHandlerContainer(HandlerContainer handlerContainer) {
         this.handlerContainer = handlerContainer;
     }
 
@@ -48,8 +56,8 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
         // 通过请求参数Class获取handler
         H handler = (H) handlerContainer.getRequestHandlerMap().get(request.getClass());
         if (null == handler) {
-            log.error("The handler is not exist or not managed by spring.");
-            throw new RuntimeException("The handler is not exist or not managed by spring.");
+            log.error(ExceptionMessage.MSG_001);
+            throw new RuntimeException(ExceptionMessage.MSG_001);
         }
         return execute(request, handler);
     }
@@ -65,8 +73,8 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
     public ResultResponse<T> execute(R request, H handler) throws Exception {
         Class<?> responseClass = handlerContainer.getHandlerResponseMap().get(handler);
         if (null == responseClass) {
-            log.error("The class object of response is not exist.");
-            throw new RuntimeException("The class object of response is not exist.");
+            log.error(ExceptionMessage.MSG_002);
+            throw new RuntimeException(ExceptionMessage.MSG_002);
         }
         T response = (T) responseClass.getDeclaredConstructor().newInstance();
         // 执行前置拦截器
@@ -87,7 +95,7 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
     private ResultResponse<T> buildResultResponse(T response) {
         ResultResponse<T> resultResponse = new ResultResponse<>();
         resultResponse.setData(response);
-        resultResponse.setHttpStatus(HttpStatus.OK.value());
+        resultResponse.setStatusCode(HttpStatus.OK.value());
         resultResponse.setTimestamp(ZonedDateTime.now());
         return resultResponse;
     }

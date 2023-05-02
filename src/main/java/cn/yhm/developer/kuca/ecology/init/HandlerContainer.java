@@ -1,6 +1,6 @@
 package cn.yhm.developer.kuca.ecology.init;
 
-import cn.yhm.developer.kuca.ecology.core.EcologyHandleable;
+import cn.yhm.developer.kuca.ecology.core.EcologyRequestHandler;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -12,11 +12,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Handler容器
+ *
  * @author victor2015yhm@gmail.com
  * @since 2023-03-15 19:16:53
  */
 @Component
-public class RequestResponseHandlerContainer {
+public class HandlerContainer {
 
     private interface Constant {
 
@@ -40,12 +42,12 @@ public class RequestResponseHandlerContainer {
     /**
      * 请求对象与handler对应Map
      */
-    private final ConcurrentHashMap<Class<?>, EcologyHandleable<?, ?>> requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    private final ConcurrentHashMap<Class<?>, EcologyRequestHandler<?, ?>> requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
 
     /**
      * handler与响应对象对应Map
      */
-    private final ConcurrentHashMap<EcologyHandleable<?, ?>, Class<?>> handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    private final ConcurrentHashMap<EcologyRequestHandler<?, ?>, Class<?>> handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
 
     private ApplicationContext appContext;
 
@@ -79,11 +81,12 @@ public class RequestResponseHandlerContainer {
      * 初始化Map
      */
     private void initRequestResponseHandlerMap() {
-        Map<String, EcologyHandleable> handlerMap = appContext.getBeansOfType(EcologyHandleable.class);
-        for (EcologyHandleable<?, ?> handler : handlerMap.values()) {
+        Map<String, EcologyRequestHandler> handlerMap = appContext.getBeansOfType(EcologyRequestHandler.class);
+        for (EcologyRequestHandler<?, ?> handler : handlerMap.values()) {
             for (Method method : AopUtils.getTargetClass(handler).getMethods()) {
-                boolean isHandleMethod = isHandleMethod(method);
-                buildRequestResponseHandlerMap(isHandleMethod, handler, method);
+                if (isHandleMethod(method)) {
+                    buildRequestResponseHandlerMap(handler, method);
+                }
             }
         }
     }
@@ -91,24 +94,20 @@ public class RequestResponseHandlerContainer {
     /**
      * 初始化requestHandlerMap、handlerResponseMap
      *
-     * @param isHandleMethod 是否为handle方法
-     * @param handler        Handler对象
-     * @param method         handle方法
+     * @param handler Handler对象
+     * @param method  handle方法
      */
-    private void buildRequestResponseHandlerMap(boolean isHandleMethod, EcologyHandleable<?, ?> handler, Method method) {
-        if (!isHandleMethod) {
-            return;
-        }
+    private void buildRequestResponseHandlerMap(EcologyRequestHandler<?, ?> handler, Method method) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         requestHandlerMap.put(parameterTypes[0], handler);
         handlerResponseMap.put(handler, parameterTypes[1]);
     }
 
-    public ConcurrentHashMap<Class<?>, EcologyHandleable<?, ?>> getRequestHandlerMap() {
+    public ConcurrentHashMap<Class<?>, EcologyRequestHandler<?, ?>> getRequestHandlerMap() {
         return requestHandlerMap;
     }
 
-    public ConcurrentHashMap<EcologyHandleable<?, ?>, Class<?>> getHandlerResponseMap() {
+    public ConcurrentHashMap<EcologyRequestHandler<?, ?>, Class<?>> getHandlerResponseMap() {
         return handlerResponseMap;
     }
 }

@@ -32,7 +32,7 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
         int INIT_CAPACITY = 128;
 
         /**
-         * interceptor方法名
+         * 拦截器方法名
          */
         String INTERCEPT_METHOD_NAME = "intercept";
 
@@ -88,10 +88,9 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
      *
      * @param method               方法对象
      * @param expectParameterCount 期望的方法参数个数
-     * @param parameterCount       实际的方法参数格式
      * @return boolean
      */
-    private boolean isInterceptMethod(Method method, int expectParameterCount, int parameterCount) {
+    private boolean isInterceptMethod(Method method, int expectParameterCount) {
         return Modifier.isPublic(method.getModifiers())
                 && !method.isSynthetic()
                 && Constant.INTERCEPT_METHOD_NAME.equalsIgnoreCase(method.getName())
@@ -107,11 +106,9 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
         for (HandlerBeforeInterceptor<R> interceptor : beforeInterceptorMap.values()) {
             Method[] methods = interceptor.getClass().getMethods();
             for (Method method : methods) {
-                if (isInterceptMethod(method, Constant.BEFORE_INTERCEPTOR_METHOD_PARAMETER_COUNT, method.getParameterCount())) {
+                if (isInterceptMethod(method, Constant.BEFORE_INTERCEPTOR_METHOD_PARAMETER_COUNT)) {
                     Class<?> parameterType = method.getParameterTypes()[0];
-                    this.handlerBeforeInterceptorMap.computeIfAbsent(parameterType, k -> {
-                        return new TreeSet<>();
-                    }).add((B) interceptor);
+                    this.handlerBeforeInterceptorMap.computeIfAbsent(parameterType, k -> new TreeSet<>()).add((B) interceptor);
                 }
             }
         } // end for
@@ -126,11 +123,9 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
         for (HandlerAfterReturnInterceptor<R, T> interceptor : afterReturnInterceptorMap.values()) {
             Method[] methods = interceptor.getClass().getMethods();
             for (Method method : methods) {
-                if (isInterceptMethod(method, Constant.AFTER_INTERCEPTOR_METHOD_PARAMETER_COUNT, method.getParameterCount())) {
+                if (isInterceptMethod(method, Constant.AFTER_INTERCEPTOR_METHOD_PARAMETER_COUNT)) {
                     Class<?> parameterType = method.getParameterTypes()[0];
-                    this.handlerAfterReturnInterceptor.computeIfAbsent(parameterType, k -> {
-                        return new TreeSet<>();
-                    }).add((A) interceptor);
+                    this.handlerAfterReturnInterceptor.computeIfAbsent(parameterType, k -> new TreeSet<>()).add((A) interceptor);
                 }
             }
         } // end for
@@ -143,7 +138,7 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
      */
     public void doBeforeInterceptor(R request) {
         ConcurrentHashMap<Class<?>, TreeSet<B>> interceptorMap = this.handlerBeforeInterceptorMap;
-        if (interceptorMap.size() < 1) {
+        if (interceptorMap.size() < 1 || interceptorMap.get(request.getClass()).size() < 1) {
             return;
         }
         for (B b : interceptorMap.get(request.getClass())) {
@@ -159,7 +154,7 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
      */
     public void doAfterReturnInterceptor(R request, T response) {
         ConcurrentHashMap<Class<?>, TreeSet<A>> interceptorMap = this.handlerAfterReturnInterceptor;
-        if (interceptorMap.size() < 1) {
+        if (interceptorMap.size() < 1 || interceptorMap.get(request.getClass()).size() < 1) {
             return;
         }
         for (A a : interceptorMap.get(request.getClass())) {

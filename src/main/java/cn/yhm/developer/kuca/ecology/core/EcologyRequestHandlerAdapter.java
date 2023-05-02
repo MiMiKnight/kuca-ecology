@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public abstract class AbstractEcologyHandlerAdapter {
+public abstract class EcologyRequestHandlerAdapter {
 
     /**
      * 异常信息常量
@@ -44,6 +44,9 @@ public abstract class AbstractEcologyHandlerAdapter {
     /**
      * 处理方法
      *
+     * @param <R>          请求对象类
+     * @param <T>          响应对象类
+     * @param <H>          处理对象类
      * @param request      请求参数
      * @param handlerClass 处理类对象
      * @return response 响应参数
@@ -51,8 +54,8 @@ public abstract class AbstractEcologyHandlerAdapter {
      */
     public <T extends EcologyResponse,
             R extends EcologyRequest,
-            H extends EcologyHandleable<R, T>> ResultResponse<T> handle(R request,
-                                                                        Class<H> handlerClass) throws Exception {
+            H extends EcologyRequestHandler<R, T>> ResultResponse<T> handle(R request,
+                                                                            Class<H> handlerClass) throws Exception {
         if (null == handlerClass) {
             throw new IllegalArgumentException(ExceptionMessage.MSG_001);
         }

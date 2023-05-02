@@ -20,16 +20,17 @@ import java.time.ZonedDateTime;
 public class ExceptionResponse<T> implements EcologyResponse {
 
     /**
-     * 错误码
+     * HTTP响应状态码
      */
-    @JsonProperty(value = "error_code", index = 1)
-    private String errorCode;
+    @JsonProperty(value = "status_code", index = 1)
+    private int statusCode;
 
     /**
-     * HTTP状态码
+     * 错误码
      */
-    @JsonProperty(value = "http_status", index = 2)
-    private Integer httpStatus;
+    @JsonProperty(value = "error_code", index = 2)
+    private String errorCode;
+
 
     /**
      * 错误类型
@@ -45,7 +46,7 @@ public class ExceptionResponse<T> implements EcologyResponse {
     private ZonedDateTime timestamp;
 
     /**
-     * 错误提示信息
+     * 错误信息
      */
     @JsonProperty(value = "data", index = 5)
     T data;
