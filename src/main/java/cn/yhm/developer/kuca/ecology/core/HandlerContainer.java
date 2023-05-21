@@ -1,11 +1,13 @@
-package cn.yhm.developer.kuca.ecology.init;
+package cn.yhm.developer.kuca.ecology.core;
 
-import cn.yhm.developer.kuca.ecology.core.EcologyRequestHandler;
+import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
+import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
@@ -42,7 +44,8 @@ public class HandlerContainer {
     /**
      * 请求对象与handler对应Map
      */
-    private final ConcurrentHashMap<Class<?>, EcologyRequestHandler<?, ?>> requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    private final ConcurrentHashMap<Class<?>, EcologyRequestHandler<?, ?>> requestHandlerMap =
+            new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
 
     /**
      * handler与响应对象对应Map
@@ -59,27 +62,39 @@ public class HandlerContainer {
     /**
      * 初始化方法
      */
+    @PostConstruct
     public void init() {
         initRequestResponseHandlerMap();
     }
 
     /**
      * 当前方法是否为Handler的默认handle方法
+     * <p>
+     * public修改的方法；
+     * 方法为非人工合成的；
+     * 方法名为handle；
+     * 方法参数个数为2；
+     * 方法的第1个参数实现了EcologyRequest接口；
+     * 方法的第2个参数实现了EcologyResponse接口；
      *
      * @param method 方法
      * @return boolean
      */
     private boolean isHandleMethod(Method method) {
-        // public修改的方法、方法名为handle、方法参数个数为2、方法为非人工合成的
+        Class<?>[] parameterTypes = method.getParameterTypes();
         return Modifier.isPublic(method.getModifiers())
                 && !method.isSynthetic()
                 && Constant.HANDLE_METHOD_NAME.equalsIgnoreCase(method.getName())
-                && Constant.HANDLE_METHOD_PARAMETER_COUNT == method.getParameterCount();
+                && Constant.HANDLE_METHOD_PARAMETER_COUNT == method.getParameterCount()
+                && EcologyRequest.class.isAssignableFrom(parameterTypes[0])
+                && EcologyResponse.class.isAssignableFrom(parameterTypes[1]);
+
     }
 
     /**
      * 初始化Map
      */
+    @SuppressWarnings("rawtypes")
     private void initRequestResponseHandlerMap() {
         Map<String, EcologyRequestHandler> handlerMap = appContext.getBeansOfType(EcologyRequestHandler.class);
         for (EcologyRequestHandler<?, ?> handler : handlerMap.values()) {
@@ -103,10 +118,16 @@ public class HandlerContainer {
         handlerResponseMap.put(handler, parameterTypes[1]);
     }
 
+    /**
+     * 获取RequestHandlerMap
+     */
     public ConcurrentHashMap<Class<?>, EcologyRequestHandler<?, ?>> getRequestHandlerMap() {
         return requestHandlerMap;
     }
 
+    /**
+     * 获取HandlerResponseMap
+     */
     public ConcurrentHashMap<EcologyRequestHandler<?, ?>, Class<?>> getHandlerResponseMap() {
         return handlerResponseMap;
     }

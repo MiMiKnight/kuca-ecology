@@ -22,8 +22,8 @@ public class ExceptionResponse<T> implements EcologyResponse {
     /**
      * HTTP响应状态码
      */
-    @JsonProperty(value = "status_code", index = 1)
-    private int statusCode;
+    @JsonProperty(value = "http_status", index = 1)
+    private int httpStatus;
 
     /**
      * 错误码

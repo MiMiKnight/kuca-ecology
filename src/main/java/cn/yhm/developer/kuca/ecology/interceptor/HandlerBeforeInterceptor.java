@@ -3,7 +3,7 @@ package cn.yhm.developer.kuca.ecology.interceptor;
 import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
 
 /**
- * Handler前置拦截器接口
+ * 请求Handler前置拦截器接口
  *
  * @author victor2015yhm@gmail.com
  * @since 2023-03-15 18:14:28

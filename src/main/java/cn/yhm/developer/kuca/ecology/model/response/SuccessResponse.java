@@ -8,20 +8,20 @@ import lombok.Setter;
 import java.time.ZonedDateTime;
 
 /**
- * 结果响应参数对象
+ * 请求成功响应参数封装对象
  *
  * @author victor2015yhm@gmail.com
  * @since 2023-03-09 19:58:20
  */
 @Setter
 @Getter
-public class ResultResponse<T> implements EcologyResponse {
+public class SuccessResponse<T> implements EcologyResponse {
 
     /**
      * HTTP响应状态码
      */
-    @JsonProperty(value = "status_code", index = 1)
-    private int statusCode;
+    @JsonProperty(value = "http_status", index = 1)
+    private int httpStatus;
 
     /**
      * 接口响应时间戳

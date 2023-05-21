@@ -2,7 +2,7 @@ package cn.yhm.developer.kuca.ecology.core;
 
 import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
 import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
-import cn.yhm.developer.kuca.ecology.model.response.ResultResponse;
+import cn.yhm.developer.kuca.ecology.model.response.SuccessResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +16,9 @@ import org.springframework.stereotype.Component;
  * @since 2022-09-05 01:15:27
  */
 @Slf4j
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Component
-public abstract class EcologyRequestHandlerAdapter {
+public abstract class EcologyRequestHandleAdapter {
 
     /**
      * 异常信息常量
@@ -54,8 +55,8 @@ public abstract class EcologyRequestHandlerAdapter {
      */
     public <T extends EcologyResponse,
             R extends EcologyRequest,
-            H extends EcologyRequestHandler<R, T>> ResultResponse<T> handle(R request,
-                                                                            Class<H> handlerClass) throws Exception {
+            H extends EcologyRequestHandler<R, T>> SuccessResponse<T> handle(R request,
+                                                                             Class<H> handlerClass) throws Exception {
         if (null == handlerClass) {
             throw new IllegalArgumentException(ExceptionMessage.MSG_001);
         }
@@ -78,7 +79,7 @@ public abstract class EcologyRequestHandlerAdapter {
      * @throws Exception 异常
      */
     public <T extends EcologyResponse,
-            R extends EcologyRequest> ResultResponse<T> handle(R request) throws Exception {
+            R extends EcologyRequest> SuccessResponse<T> handle(R request) throws Exception {
         return handlerExecutor.execute(request);
     }
 

@@ -3,7 +3,7 @@ package cn.yhm.developer.kuca.ecology.interceptor;
 import org.springframework.core.Ordered;
 
 /**
- * Handler拦截器接口
+ * 请求Handler拦截器接口
  *
  * @author victor2015yhm@gmail.com
  * @since 2023-03-15 18:12:09
@@ -13,7 +13,7 @@ public interface EcologyHandlerInterceptor extends Ordered, Comparable<EcologyHa
     /**
      * 排序比较
      *
-     * @param interceptor 被比较对象
+     * @param interceptor 被比较的拦截器对象
      * @return int
      */
     @Override

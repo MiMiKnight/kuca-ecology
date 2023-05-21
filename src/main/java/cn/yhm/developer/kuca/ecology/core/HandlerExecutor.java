@@ -1,10 +1,8 @@
 package cn.yhm.developer.kuca.ecology.core;
 
-import cn.yhm.developer.kuca.ecology.init.HandlerContainer;
-import cn.yhm.developer.kuca.ecology.init.HandlerInterceptorContainer;
 import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
 import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
-import cn.yhm.developer.kuca.ecology.model.response.ResultResponse;
+import cn.yhm.developer.kuca.ecology.model.response.SuccessResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,7 +50,8 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
      * @return {@link T} 响应
      * @throws Exception 异常
      */
-    public ResultResponse<T> execute(R request) throws Exception {
+    @SuppressWarnings({"unchecked"})
+    public SuccessResponse<T> execute(R request) throws Exception {
         // 通过请求参数Class获取handler
         H handler = (H) handlerContainer.getRequestHandlerMap().get(request.getClass());
         if (null == handler) {
@@ -66,11 +65,12 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
      * 执行方法
      *
      * @param request 请求参数对象
-     * @param handler 处理期对象
+     * @param handler 处理器对象
      * @return {@link T} 响应
      * @throws Exception 异常
      */
-    public ResultResponse<T> execute(R request, H handler) throws Exception {
+    @SuppressWarnings({"unchecked"})
+    public SuccessResponse<T> execute(R request, H handler) throws Exception {
         Class<?> responseClass = handlerContainer.getHandlerResponseMap().get(handler);
         if (null == responseClass) {
             log.error(ExceptionMessage.MSG_002);
@@ -83,20 +83,20 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
         handler.handle(request, response);
         // 执行后置拦截器
         handlerInterceptorContainer.doAfterReturnInterceptor(request, response);
-        return buildResultResponse(response);
+        return buildSuccessResponse(response);
     }
 
     /**
-     * 赋值结果响应参数对象
+     * 构建成功响应参数封装对象
      *
      * @param response 响应参数
-     * @return {@link ResultResponse}<{@link T}>
+     * @return {@link SuccessResponse}<{@link T}>
      */
-    private ResultResponse<T> buildResultResponse(T response) {
-        ResultResponse<T> resultResponse = new ResultResponse<>();
-        resultResponse.setData(response);
-        resultResponse.setStatusCode(HttpStatus.OK.value());
-        resultResponse.setTimestamp(ZonedDateTime.now());
-        return resultResponse;
+    private SuccessResponse<T> buildSuccessResponse(T response) {
+        SuccessResponse<T> successResponse = new SuccessResponse<>();
+        successResponse.setData(response);
+        successResponse.setHttpStatus(HttpStatus.OK.value());
+        successResponse.setTimestamp(ZonedDateTime.now());
+        return successResponse;
     }
 }
