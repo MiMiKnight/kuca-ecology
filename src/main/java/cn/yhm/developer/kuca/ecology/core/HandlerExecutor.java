@@ -51,7 +51,7 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
      * @throws Exception 异常
      */
     @SuppressWarnings({"unchecked"})
-    public SuccessResponse<T> execute(R request) throws Exception {
+    public SuccessResponse execute(R request) throws Exception {
         // 通过请求参数Class获取handler
         H handler = (H) handlerContainer.getRequestHandlerMap().get(request.getClass());
         if (null == handler) {
@@ -70,7 +70,7 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
      * @throws Exception 异常
      */
     @SuppressWarnings({"unchecked"})
-    public SuccessResponse<T> execute(R request, H handler) throws Exception {
+    public SuccessResponse execute(R request, H handler) throws Exception {
         Class<?> responseClass = handlerContainer.getHandlerResponseMap().get(handler);
         if (null == responseClass) {
             log.error(ExceptionMessage.MSG_002);
@@ -92,8 +92,8 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
      * @param response 响应参数
      * @return {@link SuccessResponse}<{@link T}>
      */
-    private SuccessResponse<T> buildSuccessResponse(T response) {
-        SuccessResponse<T> successResponse = new SuccessResponse<>();
+    private SuccessResponse buildSuccessResponse(T response) {
+        SuccessResponse successResponse = new SuccessResponse();
         successResponse.setData(response);
         successResponse.setHttpStatus(HttpStatus.OK.value());
         successResponse.setTimestamp(ZonedDateTime.now());

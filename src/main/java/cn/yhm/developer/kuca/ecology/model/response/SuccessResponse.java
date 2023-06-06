@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
  */
 @Setter
 @Getter
-public class SuccessResponse<T> implements EcologyResponse {
+public class SuccessResponse implements EcologyResponse {
 
     /**
      * HTTP响应状态码
@@ -34,5 +34,5 @@ public class SuccessResponse<T> implements EcologyResponse {
      * 响应数据
      */
     @JsonProperty(value = "data", index = 3)
-    T data;
+    Object data;
 }

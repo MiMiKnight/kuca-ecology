@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 @Builder
 @Getter
 @Setter
-public class ExceptionResponse<T> implements EcologyResponse {
+public class ExceptionResponse implements EcologyResponse {
 
     /**
      * HTTP响应状态码
@@ -49,5 +49,5 @@ public class ExceptionResponse<T> implements EcologyResponse {
      * 错误信息
      */
     @JsonProperty(value = "data", index = 5)
-    T data;
+    Object data;
 }
