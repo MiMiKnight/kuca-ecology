@@ -30,6 +30,12 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
 
     private HandlerContainer handlerContainer;
 
+    @Autowired
+    public void setHandlerContainer(HandlerContainer handlerContainer) {
+        this.handlerContainer = handlerContainer;
+    }
+
+
     private HandlerInterceptorContainer<R, T, ?, ?> handlerInterceptorContainer;
 
     @Autowired
@@ -37,11 +43,31 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
         this.handlerInterceptorContainer = handlerInterceptorContainer;
     }
 
-    @Autowired
-    public void setHandlerContainer(HandlerContainer handlerContainer) {
-        this.handlerContainer = handlerContainer;
+    /**
+     * 执行方法
+     *
+     * @param request 请求参数对象
+     * @param handler 处理器对象
+     * @return {@link T} 响应
+     * @throws Exception 异常
+     */
+    @SuppressWarnings({"unchecked"})
+    public SuccessResponse execute(R request, H handler) throws Exception {
+        Class<?> responseClass = handlerContainer.getHandlerResponseMap().get(handler);
+        if (null == responseClass) {
+            log.error(ExceptionMessage.MSG_002);
+            throw new RuntimeException(ExceptionMessage.MSG_002);
+        }
+        T response = (T) responseClass.getDeclaredConstructor().newInstance();
+        // 参数校验
+        // 执行前置拦截器
+        handlerInterceptorContainer.doBeforeInterceptor(request);
+        // 执行handle方法
+        handler.handle(request, response);
+        // 执行后置拦截器
+        handlerInterceptorContainer.doAfterReturnInterceptor(request, response);
+        return buildSuccessResponse(response);
     }
-
 
     /**
      * 执行方法
@@ -62,41 +88,16 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
     }
 
     /**
-     * 执行方法
-     *
-     * @param request 请求参数对象
-     * @param handler 处理器对象
-     * @return {@link T} 响应
-     * @throws Exception 异常
-     */
-    @SuppressWarnings({"unchecked"})
-    public SuccessResponse execute(R request, H handler) throws Exception {
-        Class<?> responseClass = handlerContainer.getHandlerResponseMap().get(handler);
-        if (null == responseClass) {
-            log.error(ExceptionMessage.MSG_002);
-            throw new RuntimeException(ExceptionMessage.MSG_002);
-        }
-        T response = (T) responseClass.getDeclaredConstructor().newInstance();
-        // 执行前置拦截器
-        handlerInterceptorContainer.doBeforeInterceptor(request);
-        // 执行handle方法
-        handler.handle(request, response);
-        // 执行后置拦截器
-        handlerInterceptorContainer.doAfterReturnInterceptor(request, response);
-        return buildSuccessResponse(response);
-    }
-
-    /**
      * 构建成功响应参数封装对象
      *
      * @param response 响应参数
      * @return {@link SuccessResponse}<{@link T}>
      */
     private SuccessResponse buildSuccessResponse(T response) {
-        SuccessResponse successResponse = new SuccessResponse();
-        successResponse.setData(response);
-        successResponse.setHttpStatus(HttpStatus.OK.value());
-        successResponse.setTimestamp(ZonedDateTime.now());
-        return successResponse;
+        return SuccessResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .timestamp(ZonedDateTime.now())
+                .data(response)
+                .build();
     }
 }

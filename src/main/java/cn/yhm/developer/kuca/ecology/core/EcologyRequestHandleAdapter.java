@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
  * @author victor2015yhm@gmail.com
  * @since 2022-09-05 01:15:27
  */
-@Slf4j
 @SuppressWarnings({"rawtypes", "unchecked"})
+@Slf4j
 @Component
 public abstract class EcologyRequestHandleAdapter {
 
