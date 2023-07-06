@@ -4,6 +4,8 @@ import cn.yhm.developer.kuca.ecology.interceptor.HandlerAfterReturnInterceptor;
 import cn.yhm.developer.kuca.ecology.interceptor.HandlerBeforeInterceptor;
 import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
 import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -187,9 +189,7 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
      */
     public void doBeforeInterceptor(R request) {
         ConcurrentHashMap<Class<?>, TreeSet<B>> interceptorMap = this.handlerBeforeInterceptorMap;
-        if (interceptorMap.size() < 1
-                || null == interceptorMap.get(request.getClass())
-                || interceptorMap.get(request.getClass()).size() < 1) {
+        if (MapUtils.isEmpty(interceptorMap) || CollectionUtils.isEmpty(interceptorMap.get(request.getClass()))) {
             return;
         }
         TreeSet<B> interceptors = interceptorMap.get(request.getClass());
@@ -206,9 +206,7 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
      */
     public void doAfterReturnInterceptor(R request, T response) {
         ConcurrentHashMap<Class<?>, TreeSet<A>> interceptorMap = this.handlerAfterReturnInterceptorMap;
-        if (interceptorMap.size() < 1
-                || null == interceptorMap.get(request.getClass())
-                || interceptorMap.get(request.getClass()).size() < 1) {
+        if (MapUtils.isEmpty(interceptorMap) || CollectionUtils.isEmpty(interceptorMap.get(request.getClass()))) {
             return;
         }
         TreeSet<A> interceptors = interceptorMap.get(request.getClass());

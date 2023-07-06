@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Handler容器
@@ -44,13 +45,12 @@ public class HandlerContainer {
     /**
      * 请求对象与handler对应Map
      */
-    private final ConcurrentHashMap<Class<?>, EcologyRequestHandler<?, ?>> requestHandlerMap =
-            new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    private final ConcurrentMap<Class<?>, EcologyRequestHandler<?, ?>> requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
 
     /**
      * handler与响应对象对应Map
      */
-    private final ConcurrentHashMap<EcologyRequestHandler<?, ?>, Class<?>> handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    private final ConcurrentMap<EcologyRequestHandler<?, ?>, Class<?>> handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
 
     private ApplicationContext appContext;
 
@@ -121,14 +121,14 @@ public class HandlerContainer {
     /**
      * 获取RequestHandlerMap
      */
-    public ConcurrentHashMap<Class<?>, EcologyRequestHandler<?, ?>> getRequestHandlerMap() {
+    public ConcurrentMap<Class<?>, EcologyRequestHandler<?, ?>> getRequestHandlerMap() {
         return requestHandlerMap;
     }
 
     /**
      * 获取HandlerResponseMap
      */
-    public ConcurrentHashMap<EcologyRequestHandler<?, ?>, Class<?>> getHandlerResponseMap() {
+    public ConcurrentMap<EcologyRequestHandler<?, ?>, Class<?>> getHandlerResponseMap() {
         return handlerResponseMap;
     }
 }
