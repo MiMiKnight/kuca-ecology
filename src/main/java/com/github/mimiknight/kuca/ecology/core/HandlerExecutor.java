@@ -1,8 +1,8 @@
-package cn.yhm.developer.kuca.ecology.core;
+package com.github.mimiknight.kuca.ecology.core;
 
-import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
-import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
-import cn.yhm.developer.kuca.ecology.model.response.SuccessResponse;
+import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
+import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
+import com.github.mimiknight.kuca.ecology.model.response.SuccessResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,3 +1,3 @@
-cn.yhm.developer.kuca.ecology.core.HandlerContainer
-cn.yhm.developer.kuca.ecology.core.HandlerInterceptorContainer
-cn.yhm.developer.kuca.ecology.core.HandlerExecutor
+com.github.mimiknight.kuca.ecology.core.HandlerContainer
+com.github.mimiknight.kuca.ecology.core.HandlerInterceptorContainer
+com.github.mimiknight.kuca.ecology.core.HandlerExecutor

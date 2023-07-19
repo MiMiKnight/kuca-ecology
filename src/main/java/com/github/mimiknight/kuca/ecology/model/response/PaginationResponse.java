@@ -1,4 +1,4 @@
-package cn.yhm.developer.kuca.ecology.model.response;
+package com.github.mimiknight.kuca.ecology.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

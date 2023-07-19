@@ -1,8 +1,8 @@
-package cn.yhm.developer.kuca.ecology.core;
+package com.github.mimiknight.kuca.ecology.core;
 
-import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
-import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
-import cn.yhm.developer.kuca.ecology.model.response.SuccessResponse;
+import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
+import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
+import com.github.mimiknight.kuca.ecology.model.response.SuccessResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,13 +71,12 @@ public abstract class EcologyRequestHandleAdapter {
     /**
      * 处理方法
      *
-     * @param <R> 请求参数对象类型
-     * @param <T> 响应参数对象类型
+     * @param <R>     请求参数对象类型
      * @param request 请求参数
      * @return response 响应参数
      * @throws Exception 异常
      */
-    public <R extends EcologyRequest, T extends EcologyResponse> SuccessResponse handle(R request) throws Exception {
+    public <R extends EcologyRequest> SuccessResponse handle(R request) throws Exception {
         return handlerExecutor.execute(request);
     }
 

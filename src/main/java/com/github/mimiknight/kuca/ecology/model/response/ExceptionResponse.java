@@ -1,12 +1,10 @@
-package cn.yhm.developer.kuca.ecology.model.response;
+package com.github.mimiknight.kuca.ecology.model.response;
 
 import cn.yhm.developer.kuca.common.constant.DateTimeFormatStandard;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.ZonedDateTime;
 

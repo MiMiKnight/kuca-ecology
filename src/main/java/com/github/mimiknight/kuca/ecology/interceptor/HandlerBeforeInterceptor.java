@@ -1,6 +1,6 @@
-package cn.yhm.developer.kuca.ecology.interceptor;
+package com.github.mimiknight.kuca.ecology.interceptor;
 
-import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
+import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 
 /**
  * 请求Handler前置拦截器接口

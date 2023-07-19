@@ -1,4 +1,4 @@
-package cn.yhm.developer.kuca.ecology.model.request;
+package com.github.mimiknight.kuca.ecology.model.request;
 
 /**
  * 请求参数接口

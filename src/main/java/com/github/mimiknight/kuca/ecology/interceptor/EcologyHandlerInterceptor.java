@@ -1,4 +1,4 @@
-package cn.yhm.developer.kuca.ecology.interceptor;
+package com.github.mimiknight.kuca.ecology.interceptor;
 
 import org.springframework.core.Ordered;
 

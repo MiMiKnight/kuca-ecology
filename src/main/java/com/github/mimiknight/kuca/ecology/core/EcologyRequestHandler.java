@@ -1,7 +1,7 @@
-package cn.yhm.developer.kuca.ecology.core;
+package com.github.mimiknight.kuca.ecology.core;
 
-import cn.yhm.developer.kuca.ecology.model.request.EcologyRequest;
-import cn.yhm.developer.kuca.ecology.model.response.EcologyResponse;
+import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
+import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 
 /**
  * 请求处理器接口
