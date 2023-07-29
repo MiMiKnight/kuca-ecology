@@ -2,7 +2,7 @@ package com.github.mimiknight.kuca.ecology.model.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.mimiknight.kuca.common.constant.DateTimeFormatStandard;
+import com.github.mimiknight.kuca.utils.constant.DateTimeFormatStandard;
 import lombok.Builder;
 import lombok.Data;
 

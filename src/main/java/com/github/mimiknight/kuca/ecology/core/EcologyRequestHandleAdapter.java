@@ -47,6 +47,9 @@ public abstract class EcologyRequestHandleAdapter {
      *
      * @param request      请求参数
      * @param handlerClass 处理类对象
+     * @param <T>          接口响应对象类型泛型
+     * @param <R>          接口请求对象类型泛型
+     * @param <H>          请求处理器对象类型泛型
      * @return response 响应参数
      * @throws Exception 异常
      */

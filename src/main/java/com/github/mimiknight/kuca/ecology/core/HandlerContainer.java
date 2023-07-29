@@ -120,6 +120,8 @@ public class HandlerContainer {
 
     /**
      * 获取RequestHandlerMap
+     *
+     * @return {@link ConcurrentMap}
      */
     public ConcurrentMap<Class<?>, EcologyRequestHandler<?, ?>> getRequestHandlerMap() {
         return requestHandlerMap;
@@ -127,6 +129,8 @@ public class HandlerContainer {
 
     /**
      * 获取HandlerResponseMap
+     *
+     * @return {@link ConcurrentMap}
      */
     public ConcurrentMap<EcologyRequestHandler<?, ?>, Class<?>> getHandlerResponseMap() {
         return handlerResponseMap;
