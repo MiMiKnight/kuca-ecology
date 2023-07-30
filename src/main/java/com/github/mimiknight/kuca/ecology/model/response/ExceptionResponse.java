@@ -27,7 +27,7 @@ public class ExceptionResponse implements EcologyResponse {
     /**
      * 时间戳
      */
-    @JsonFormat(pattern = DateTimeFormatStandard.STANDARD_4)
+    @JsonFormat(pattern = DateTimeFormatStandard.STANDARD_6)
     @JsonProperty(value = "timestamp", index = 2)
     private ZonedDateTime timestamp;
 

@@ -27,7 +27,7 @@ public class SuccessResponse implements EcologyResponse {
     /**
      * 接口响应时间戳
      */
-    @JsonFormat(pattern = DateTimeFormatStandard.STANDARD_4)
+    @JsonFormat(pattern = DateTimeFormatStandard.STANDARD_6)
     @JsonProperty(value = "timestamp", index = 2)
     private ZonedDateTime timestamp;
 
