@@ -1,0 +1,1 @@
+# kuca-ecology-spring-boot-starter
