@@ -1,5 +1,6 @@
 package com.github.mimiknight.kuca.ecology.core;
 
+import com.github.mimiknight.kuca.ecology.exception.HandlerNotFoundException;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import com.github.mimiknight.kuca.ecology.model.response.SuccessResponse;
@@ -19,14 +20,6 @@ import java.time.ZonedDateTime;
 @Slf4j
 @Component
 public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse, H extends EcologyRequestHandler<R, T>> {
-
-    /**
-     * 异常信息常量
-     */
-    private interface ExceptionMessage {
-        String MSG_001 = "The handler is not exist or not managed by spring.";
-        String MSG_002 = "The class object of response is not exist.";
-    }
 
     private HandlerContainer handlerContainer;
 
@@ -55,11 +48,10 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
     public SuccessResponse execute(R request, H handler) throws Exception {
         Class<?> responseClass = handlerContainer.getHandlerResponseMap().get(handler);
         if (null == responseClass) {
-            log.error(ExceptionMessage.MSG_002);
-            throw new RuntimeException(ExceptionMessage.MSG_002);
+            log.error("The class of response is not exist,handler name = {}", handler.getClass().getSimpleName());
+            throw new ClassNotFoundException("The class object of response is not exist.");
         }
         T response = (T) responseClass.getDeclaredConstructor().newInstance();
-        // 参数校验
         // 执行前置拦截器
         handlerInterceptorContainer.doBeforeInterceptor(request);
         // 执行handle方法
@@ -81,8 +73,8 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
         // 通过请求参数Class获取handler
         H handler = (H) handlerContainer.getRequestHandlerMap().get(request.getClass());
         if (null == handler) {
-            log.error(ExceptionMessage.MSG_001);
-            throw new RuntimeException(ExceptionMessage.MSG_001);
+            log.error("The handler is not exist or not managed by spring,request class name = {}", request.getClass().getSimpleName());
+            throw new HandlerNotFoundException("The handler is not exist or not managed by spring.");
         }
         return execute(request, handler);
     }
