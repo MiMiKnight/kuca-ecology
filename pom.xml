@@ -6,15 +6,15 @@
 
     <!--父工程-->
     <parent>
-        <groupId>com.github.mimiknight</groupId>
+        <groupId>com.github.mimiknight.kuca</groupId>
         <artifactId>kuca-parent-spring-boot-starter</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1-SNAPSHOT</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <!--本工程-->
     <artifactId>kuca-ecology-spring-boot-starter</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Kuca Ecology</name>
     <description>Kuca Ecology 项目</description>
@@ -26,20 +26,20 @@
         <!--Maven 最低运行版本-->
         <maven.version>3.8.0</maven.version>
         <!--OpenJDK 最低运行版本-->
-        <jdk.version>11.0.2</jdk.version>
+        <jdk.version>1.8.0_371</jdk.version>
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.version>11</maven.compiler.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.version>8</maven.compiler.version>
         <!--kuca-utils-->
-        <kuca-utils-spring-boot-starter.version>1.0.0-SNAPSHOT</kuca-utils-spring-boot-starter.version>
+        <kuca-utils-spring-boot-starter.version>0.0.1-SNAPSHOT</kuca-utils-spring-boot-starter.version>
     </properties>
 
     <!--引入依赖-->
     <dependencies>
         <dependency>
-            <groupId>com.github.mimiknight</groupId>
+            <groupId>com.github.mimiknight.kuca</groupId>
             <artifactId>kuca-utils-spring-boot-starter</artifactId>
             <version>${kuca-utils-spring-boot-starter.version}</version>
         </dependency>
