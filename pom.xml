@@ -13,11 +13,12 @@
     </parent>
 
     <!--本工程-->
+    <groupId>com.github.mimiknight.kuca</groupId>
     <artifactId>kuca-ecology-spring-boot-starter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Kuca Ecology</name>
-    <description>Kuca Ecology 项目</description>
+    <name>kuca-ecology-spring-boot-starter</name>
+    <description>kuca-ecology-spring-boot-starter</description>
 
     <!--版本管理-->
     <properties>
@@ -26,12 +27,12 @@
         <!--Maven 最低运行版本-->
         <maven.version>3.8.0</maven.version>
         <!--OpenJDK 最低运行版本-->
-        <jdk.version>1.8.0_371</jdk.version>
+        <jdk.version>17.0.2</jdk.version>
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <maven.compiler.version>8</maven.compiler.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.version>17</maven.compiler.version>
         <!--kuca-utils-->
         <kuca-utils-spring-boot-starter.version>0.0.1-SNAPSHOT</kuca-utils-spring-boot-starter.version>
     </properties>
