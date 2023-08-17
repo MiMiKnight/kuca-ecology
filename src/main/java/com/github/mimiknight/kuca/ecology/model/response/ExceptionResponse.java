@@ -1,12 +1,8 @@
 package com.github.mimiknight.kuca.ecology.model.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.mimiknight.kuca.utils.constant.DateTimeFormatStandard;
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.ZonedDateTime;
 
 /**
  * 异常响应
@@ -25,28 +21,20 @@ public class ExceptionResponse implements EcologyResponse {
     private int statusCode;
 
     /**
-     * 时间戳
-     */
-    @JsonFormat(pattern = DateTimeFormatStandard.STANDARD_6)
-    @JsonProperty(value = "timestamp", index = 2)
-    private ZonedDateTime timestamp;
-
-    /**
      * 错误码
      */
-    @JsonProperty(value = "error_code", index = 3)
+    @JsonProperty(value = "error_code", index = 2)
     private String errorCode;
-
 
     /**
      * 错误类型
      */
-    @JsonProperty(value = "error_type", index = 4)
+    @JsonProperty(value = "error_type", index = 3)
     private String errorType;
 
     /**
      * 错误信息
      */
-    @JsonProperty(value = "data", index = 5)
+    @JsonProperty(value = "data", index = 4)
     Object data;
 }

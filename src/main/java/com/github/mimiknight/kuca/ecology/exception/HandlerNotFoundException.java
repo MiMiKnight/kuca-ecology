@@ -13,8 +13,8 @@ public class HandlerNotFoundException extends RuntimeException {
     }
 
 
-    public HandlerNotFoundException(String s) {
-        super(s);
+    public HandlerNotFoundException(String message) {
+        super(message);
     }
 
 

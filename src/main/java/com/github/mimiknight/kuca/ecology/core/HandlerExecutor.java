@@ -88,7 +88,6 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
     private SuccessResponse buildSuccessResponse(T response) {
         return SuccessResponse.builder()
                 .statusCode(HttpStatus.OK.value())
-                .timestamp(ZonedDateTime.now())
                 .data(response)
                 .build();
     }
