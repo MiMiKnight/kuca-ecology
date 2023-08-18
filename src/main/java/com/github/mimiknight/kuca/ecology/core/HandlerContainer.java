@@ -52,12 +52,8 @@ public class HandlerContainer {
      */
     private final ConcurrentMap<EcologyRequestHandler<?, ?>, Class<?>> handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
 
-    private ApplicationContext appContext;
-
     @Autowired
-    public void setAppContext(ApplicationContext appContext) {
-        this.appContext = appContext;
-    }
+    private ApplicationContext appContext;
 
     /**
      * 初始化方法

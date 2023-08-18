@@ -28,19 +28,11 @@ public abstract class EcologyRequestHandleAdapter {
         String MSG_002 = "'{}' has not managed by spring.";
     }
 
+    @Autowired
     private ApplicationContext appContext;
 
+    @Autowired
     private HandlerExecutor handlerExecutor;
-
-    @Autowired
-    public void setAppContext(ApplicationContext appContext) {
-        this.appContext = appContext;
-    }
-
-    @Autowired
-    public void setHandlerExecutor(HandlerExecutor executor) {
-        this.handlerExecutor = executor;
-    }
 
     /**
      * 处理方法

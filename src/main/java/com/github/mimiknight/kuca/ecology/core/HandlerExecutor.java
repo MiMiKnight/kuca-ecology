@@ -21,20 +21,12 @@ import java.time.ZonedDateTime;
 @Component
 public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse, H extends EcologyRequestHandler<R, T>> {
 
+    @Autowired
     private HandlerContainer handlerContainer;
 
     @Autowired
-    public void setHandlerContainer(HandlerContainer handlerContainer) {
-        this.handlerContainer = handlerContainer;
-    }
-
-
     private HandlerInterceptorContainer<R, T, ?, ?> handlerInterceptorContainer;
 
-    @Autowired
-    public void setHandlerInterceptorContainer(HandlerInterceptorContainer<R, T, ?, ?> handlerInterceptorContainer) {
-        this.handlerInterceptorContainer = handlerInterceptorContainer;
-    }
 
     /**
      * 执行方法
@@ -86,9 +78,6 @@ public class HandlerExecutor<R extends EcologyRequest, T extends EcologyResponse
      * @return {@link SuccessResponse}<{@link T}>
      */
     private SuccessResponse buildSuccessResponse(T response) {
-        return SuccessResponse.builder()
-                .statusCode(HttpStatus.OK.value())
-                .data(response)
-                .build();
+        return SuccessResponse.builder().statusCode(HttpStatus.OK.value()).data(response).build();
     }
 }

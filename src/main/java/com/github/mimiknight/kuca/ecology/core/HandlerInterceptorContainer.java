@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HandlerInterceptorContainer<R extends EcologyRequest, T extends EcologyResponse,
         B extends HandlerBeforeInterceptor<R>, A extends HandlerAfterReturnInterceptor<R, T>> {
 
-    private interface LocalConstant {
+    private interface Constant {
 
         /**
          * 初始化容量
@@ -55,21 +55,17 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
      * Handler前置拦截器Map
      */
     private final ConcurrentHashMap<Class<?>, TreeSet<B>> handlerBeforeInterceptorMap =
-            new ConcurrentHashMap<>(LocalConstant.INIT_CAPACITY);
+            new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
 
     /**
      * Handler后置拦截器Map
      */
     private final ConcurrentHashMap<Class<?>, TreeSet<A>> handlerAfterReturnInterceptorMap =
-            new ConcurrentHashMap<>(LocalConstant.INIT_CAPACITY);
+            new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
 
-
-    private ApplicationContext appContext;
 
     @Autowired
-    public void setAppContext(ApplicationContext appContext) {
-        this.appContext = appContext;
-    }
+    private ApplicationContext appContext;
 
     /**
      * 初始化方法
@@ -97,8 +93,8 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
         Class<?>[] parameterTypes = method.getParameterTypes();
         return Modifier.isPublic(method.getModifiers())
                 && !method.isSynthetic()
-                && LocalConstant.INTERCEPT_METHOD_NAME.equalsIgnoreCase(method.getName())
-                && LocalConstant.BEFORE_INTERCEPTOR_METHOD_PARAMETER_COUNT == method.getParameterCount()
+                && Constant.INTERCEPT_METHOD_NAME.equalsIgnoreCase(method.getName())
+                && Constant.BEFORE_INTERCEPTOR_METHOD_PARAMETER_COUNT == method.getParameterCount()
                 && EcologyRequest.class.isAssignableFrom(parameterTypes[0]);
     }
 
@@ -127,8 +123,8 @@ public class HandlerInterceptorContainer<R extends EcologyRequest, T extends Eco
         Class<?>[] parameterTypes = method.getParameterTypes();
         return Modifier.isPublic(method.getModifiers())
                 && !method.isSynthetic()
-                && LocalConstant.INTERCEPT_METHOD_NAME.equalsIgnoreCase(method.getName())
-                && LocalConstant.AFTER_INTERCEPTOR_METHOD_PARAMETER_COUNT == method.getParameterCount()
+                && Constant.INTERCEPT_METHOD_NAME.equalsIgnoreCase(method.getName())
+                && Constant.AFTER_INTERCEPTOR_METHOD_PARAMETER_COUNT == method.getParameterCount()
                 && EcologyRequest.class.isAssignableFrom(parameterTypes[0])
                 && EcologyResponse.class.isAssignableFrom(parameterTypes[1]);
     }
