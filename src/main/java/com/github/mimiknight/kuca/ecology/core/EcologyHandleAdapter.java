@@ -15,18 +15,8 @@ import org.springframework.stereotype.Component;
  * @author victor2015yhm@gmail.com
  * @since 2022-09-05 01:15:27
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 @Slf4j
-@Component
-public abstract class EcologyRequestHandleAdapter {
-
-    /**
-     * 异常信息常量
-     */
-    private interface ExceptionMessage {
-        String MSG_001 = "The handlerClass can not be null.";
-        String MSG_002 = "'{}' has not managed by spring.";
-    }
+public abstract class EcologyHandleAdapter {
 
     @Autowired
     private ApplicationContext appContext;
@@ -50,16 +40,9 @@ public abstract class EcologyRequestHandleAdapter {
             H extends EcologyRequestHandler<R, T>> SuccessResponse handle(R request,
                                                                           Class<H> handlerClass) throws Exception {
         if (null == handlerClass) {
-            throw new IllegalArgumentException(ExceptionMessage.MSG_001);
+            throw new IllegalArgumentException("The handlerClass can not be null.");
         }
-        H handler;
-        try {
-            handler = appContext.getBean(handlerClass);
-        } catch (NoSuchBeanDefinitionException e) {
-            // handler未被Spring管理
-            log.error(ExceptionMessage.MSG_002, handlerClass.getSimpleName());
-            throw e;
-        }
+        H handler = appContext.getBean(handlerClass);
         return handlerExecutor.execute(request, handler);
     }
 

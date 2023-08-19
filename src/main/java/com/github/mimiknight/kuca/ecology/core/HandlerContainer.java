@@ -2,10 +2,10 @@ package com.github.mimiknight.kuca.ecology.core;
 
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentMap;
  * @author victor2015yhm@gmail.com
  * @since 2023-03-15 19:16:53
  */
-@Component
 public class HandlerContainer {
 
     private interface Constant {
@@ -45,15 +44,20 @@ public class HandlerContainer {
     /**
      * 请求对象与handler对应Map
      */
-    private final ConcurrentMap<Class<?>, EcologyRequestHandler<?, ?>> requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    private final ConcurrentMap<Class<EcologyRequest>, EcologyRequestHandler<?, ?>> requestHandlerMap;
 
     /**
      * handler与响应对象对应Map
      */
-    private final ConcurrentMap<EcologyRequestHandler<?, ?>, Class<?>> handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    private final ConcurrentMap<EcologyRequestHandler<?, ?>, Class<EcologyResponse>> handlerResponseMap;
 
     @Autowired
     private ApplicationContext appContext;
+
+    public HandlerContainer() {
+        requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+        handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    }
 
     /**
      * 初始化方法
@@ -80,7 +84,7 @@ public class HandlerContainer {
         Class<?>[] parameterTypes = method.getParameterTypes();
         return Modifier.isPublic(method.getModifiers())
                 && !method.isSynthetic()
-                && Constant.HANDLE_METHOD_NAME.equalsIgnoreCase(method.getName())
+                && Constant.HANDLE_METHOD_NAME.equals(method.getName())
                 && Constant.HANDLE_METHOD_PARAMETER_COUNT == method.getParameterCount()
                 && EcologyRequest.class.isAssignableFrom(parameterTypes[0])
                 && EcologyResponse.class.isAssignableFrom(parameterTypes[1]);
@@ -90,10 +94,13 @@ public class HandlerContainer {
     /**
      * 初始化Map
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes"})
     private void initRequestResponseHandlerMap() {
         Map<String, EcologyRequestHandler> handlerMap = appContext.getBeansOfType(EcologyRequestHandler.class);
-        for (EcologyRequestHandler<?, ?> handler : handlerMap.values()) {
+        if (MapUtils.isEmpty(handlerMap)) {
+            return;
+        }
+        for (EcologyRequestHandler handler : handlerMap.values()) {
             for (Method method : AopUtils.getTargetClass(handler).getMethods()) {
                 if (isHandleMethod(method)) {
                     buildRequestResponseHandlerMap(handler, method);
@@ -108,10 +115,18 @@ public class HandlerContainer {
      * @param handler Handler对象
      * @param method  handle方法
      */
-    private void buildRequestResponseHandlerMap(EcologyRequestHandler<?, ?> handler, Method method) {
+    @SuppressWarnings({"unchecked"})
+    private <H extends EcologyRequestHandler<?, ?>> void buildRequestResponseHandlerMap(H handler, Method method) {
         Class<?>[] parameterTypes = method.getParameterTypes();
-        requestHandlerMap.put(parameterTypes[0], handler);
-        handlerResponseMap.put(handler, parameterTypes[1]);
+        Class<?> requestClass = parameterTypes[0];
+        Class<?> responseClass = parameterTypes[1];
+
+        if (EcologyRequest.class.isAssignableFrom(requestClass)) {
+            requestHandlerMap.put((Class<EcologyRequest>) requestClass, handler);
+        }
+        if (EcologyResponse.class.isAssignableFrom(responseClass)) {
+            handlerResponseMap.put(handler, (Class<EcologyResponse>) responseClass);
+        }
     }
 
     /**
@@ -119,7 +134,7 @@ public class HandlerContainer {
      *
      * @return {@link ConcurrentMap}
      */
-    public ConcurrentMap<Class<?>, EcologyRequestHandler<?, ?>> getRequestHandlerMap() {
+    public ConcurrentMap<Class<EcologyRequest>, EcologyRequestHandler<?, ?>> getRequestHandlerMap() {
         return requestHandlerMap;
     }
 
@@ -128,7 +143,7 @@ public class HandlerContainer {
      *
      * @return {@link ConcurrentMap}
      */
-    public ConcurrentMap<EcologyRequestHandler<?, ?>, Class<?>> getHandlerResponseMap() {
+    public ConcurrentMap<EcologyRequestHandler<?, ?>, Class<EcologyResponse>> getHandlerResponseMap() {
         return handlerResponseMap;
     }
 }

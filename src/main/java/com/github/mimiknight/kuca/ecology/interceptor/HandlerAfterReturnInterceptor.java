@@ -12,10 +12,11 @@ import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 public interface HandlerAfterReturnInterceptor<R extends EcologyRequest, T extends EcologyResponse> extends EcologyHandlerInterceptor {
 
     /**
-     * 拦截器方法
+     * 拦截方法
      *
      * @param request  请求参数
      * @param response 响应参数
+     * @throws Exception 异常
      */
-    void intercept(R request, T response);
+    void intercept(R request, T response) throws Exception;
 }
