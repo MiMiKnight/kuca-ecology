@@ -8,6 +8,8 @@ package com.github.mimiknight.kuca.ecology.exception;
  */
 public class HandlerNotFoundException extends RuntimeException {
 
+    private static final long serialVersionUID = 4037785770038127776L;
+
     public HandlerNotFoundException() {
         super();
     }
