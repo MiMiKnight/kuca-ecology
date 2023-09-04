@@ -13,7 +13,7 @@ public interface EcologyHandlerInterceptor extends Ordered, Comparable<EcologyHa
     /**
      * 排序比较
      *
-     * @param interceptor 被比较的拦截器对象
+     * @param interceptor 被比较地拦截器对象
      * @return int
      */
     @Override

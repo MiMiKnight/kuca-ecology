@@ -15,12 +15,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Handler容器
+ * 装载Handler的容器
  *
  * @author victor2015yhm@gmail.com
  * @since 2023-03-15 19:16:53
  */
-public class HandlerContainer {
+public class HandlerBox {
 
     private interface Constant {
 
@@ -54,7 +54,7 @@ public class HandlerContainer {
     @Autowired
     private ApplicationContext appContext;
 
-    public HandlerContainer() {
+    public HandlerBox() {
         requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
         handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
     }

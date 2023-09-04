@@ -18,10 +18,10 @@ import org.springframework.http.HttpStatus;
 public class HandlerExecutor {
 
     @Autowired
-    private HandlerContainer handlerContainer;
+    private HandlerBox handlerBox;
 
     @Autowired
-    private HandlerInterceptorContainer handlerInterceptorContainer;
+    private HandlerInterceptorBox handlerInterceptorBox;
 
 
     /**
@@ -39,7 +39,7 @@ public class HandlerExecutor {
     public <R extends EcologyRequest,
             T extends EcologyResponse,
             H extends EcologyRequestHandler<R, T>> SuccessResponse execute(R request, H handler) throws Exception {
-        Class<?> responseClass = handlerContainer.getHandlerResponseMap().get(handler);
+        Class<?> responseClass = handlerBox.getHandlerResponseMap().get(handler);
         if (null == responseClass) {
             String handlerName = handler.getClass().getSimpleName();
             log.error("The class of response is not exist,handler name = {}", handlerName);
@@ -47,11 +47,11 @@ public class HandlerExecutor {
         }
         T response = (T) responseClass.getDeclaredConstructor().newInstance();
         // 执行前置拦截器
-        handlerInterceptorContainer.doBeforeInterceptor(request);
+        handlerInterceptorBox.doBeforeInterceptor(request);
         // 执行handle方法
         handler.handle(request, response);
         // 执行后置拦截器
-        handlerInterceptorContainer.doAfterReturnInterceptor(request, response);
+        handlerInterceptorBox.doAfterReturnInterceptor(request, response);
         return buildSuccessResponse(response);
     }
 
@@ -70,7 +70,7 @@ public class HandlerExecutor {
             T extends EcologyResponse,
             H extends EcologyRequestHandler<R, T>> SuccessResponse execute(R request) throws Exception {
         // 通过请求参数Class获取handler
-        H handler = (H) handlerContainer.getRequestHandlerMap().get(request.getClass());
+        H handler = (H) handlerBox.getRequestHandlerMap().get(request.getClass());
         if (null == handler) {
             String requestName = request.getClass().getSimpleName();
             log.error("The handler is not exist or not managed by spring,request class name = {}", requestName);

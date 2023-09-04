@@ -17,12 +17,12 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 初始化
+ * 装载Handler拦截器的容器
  *
  * @author victor2015yhm@gmail.com
  * @since 2023-03-15 18:33:30
  */
-public class HandlerInterceptorContainer {
+public class HandlerInterceptorBox {
 
     private interface Constant {
 
@@ -52,6 +52,7 @@ public class HandlerInterceptorContainer {
      * Handler前置拦截器Map
      */
     private final ConcurrentHashMap<Class<EcologyRequest>, TreeSet<HandlerBeforeInterceptor<EcologyRequest>>> handlerBeforeInterceptorMap;
+
     /**
      * Handler后置拦截器Map
      */
@@ -61,7 +62,7 @@ public class HandlerInterceptorContainer {
     @Autowired
     private ApplicationContext appContext;
 
-    public HandlerInterceptorContainer() {
+    public HandlerInterceptorBox() {
         this.handlerBeforeInterceptorMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
         this.handlerAfterReturnInterceptorMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
     }

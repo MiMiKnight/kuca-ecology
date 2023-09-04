@@ -4,10 +4,8 @@ import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import com.github.mimiknight.kuca.ecology.model.response.SuccessResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 /**
  * 适配handler方法的抽象类
@@ -16,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @since 2022-09-05 01:15:27
  */
 @Slf4j
-public abstract class EcologyHandleAdapter {
+public abstract class EcologyHandleController {
 
     @Autowired
     private ApplicationContext appContext;
