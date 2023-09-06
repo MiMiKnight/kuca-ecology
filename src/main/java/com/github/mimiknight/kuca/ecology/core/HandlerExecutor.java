@@ -1,12 +1,16 @@
 package com.github.mimiknight.kuca.ecology.core;
 
 import com.github.mimiknight.kuca.ecology.exception.HandlerNotFoundException;
+import com.github.mimiknight.kuca.ecology.handler.EcologyRequestHandler;
+import com.github.mimiknight.kuca.ecology.handler.HandlerBox;
+import com.github.mimiknight.kuca.ecology.interceptor.HandlerInterceptorBox;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import com.github.mimiknight.kuca.ecology.model.response.SuccessResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 /**
  * Handler执行器类
@@ -15,14 +19,23 @@ import org.springframework.http.HttpStatus;
  * @since 2023-02-28 21:23:05
  */
 @Slf4j
+@Component
 public class HandlerExecutor {
 
-    @Autowired
+
     private HandlerBox handlerBox;
 
     @Autowired
+    public void setHandlerBox(HandlerBox handlerBox) {
+        this.handlerBox = handlerBox;
+    }
+
     private HandlerInterceptorBox handlerInterceptorBox;
 
+    @Autowired
+    public void setHandlerInterceptorBox(HandlerInterceptorBox handlerInterceptorBox) {
+        this.handlerInterceptorBox = handlerInterceptorBox;
+    }
 
     /**
      * 执行方法
@@ -45,6 +58,7 @@ public class HandlerExecutor {
             log.error("The class of response is not exist,handler name = {}", handlerName);
             throw new ClassNotFoundException("The class object of response is not exist.");
         }
+        // 实例化响应对象
         T response = (T) responseClass.getDeclaredConstructor().newInstance();
         // 执行前置拦截器
         handlerInterceptorBox.doBeforeInterceptor(request);
@@ -52,6 +66,7 @@ public class HandlerExecutor {
         handler.handle(request, response);
         // 执行后置拦截器
         handlerInterceptorBox.doAfterReturnInterceptor(request, response);
+        // 构建成功响应
         return buildSuccessResponse(response);
     }
 
@@ -73,8 +88,8 @@ public class HandlerExecutor {
         H handler = (H) handlerBox.getRequestHandlerMap().get(request.getClass());
         if (null == handler) {
             String requestName = request.getClass().getSimpleName();
-            log.error("The handler is not exist or not managed by spring,request class name = {}", requestName);
-            throw new HandlerNotFoundException("The handler is not exist or not managed by spring.");
+            log.error("The handler is undefined or not managed by spring,request class name = {}", requestName);
+            throw new HandlerNotFoundException("The handler is undefined or not managed by spring.");
         }
         return execute(request, handler);
     }

@@ -1,4 +1,4 @@
-package com.github.mimiknight.kuca.ecology.core;
+package com.github.mimiknight.kuca.ecology.handler;
 
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
@@ -41,6 +41,13 @@ public class HandlerBox {
 
     }
 
+    private ApplicationContext appContext;
+
+    @Autowired
+    public void setAppContext(ApplicationContext appContext) {
+        this.appContext = appContext;
+    }
+
     /**
      * 请求对象与handler对应Map
      */
@@ -50,9 +57,6 @@ public class HandlerBox {
      * handler与响应对象对应Map
      */
     private final ConcurrentMap<EcologyRequestHandler<?, ?>, Class<EcologyResponse>> handlerResponseMap;
-
-    @Autowired
-    private ApplicationContext appContext;
 
     public HandlerBox() {
         requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);

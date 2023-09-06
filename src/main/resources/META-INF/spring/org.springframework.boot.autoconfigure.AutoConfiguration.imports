@@ -1,3 +1,3 @@
-com.github.mimiknight.kuca.ecology.core.HandlerBox
-com.github.mimiknight.kuca.ecology.core.HandlerInterceptorBox
+com.github.mimiknight.kuca.ecology.handler.HandlerBox
+com.github.mimiknight.kuca.ecology.interceptor.HandlerInterceptorBox
 com.github.mimiknight.kuca.ecology.core.HandlerExecutor

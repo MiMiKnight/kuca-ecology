@@ -1,11 +1,13 @@
 package com.github.mimiknight.kuca.ecology.core;
 
+import com.github.mimiknight.kuca.ecology.handler.EcologyRequestHandler;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import com.github.mimiknight.kuca.ecology.model.response.SuccessResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.Assert;
 
 /**
  * 适配handler方法的抽象类
@@ -16,11 +18,19 @@ import org.springframework.context.ApplicationContext;
 @Slf4j
 public abstract class EcologyHandleController {
 
-    @Autowired
     private ApplicationContext appContext;
 
     @Autowired
+    public void setAppContext(ApplicationContext appContext) {
+        this.appContext = appContext;
+    }
+
     private HandlerExecutor handlerExecutor;
+
+    @Autowired
+    public void setHandlerExecutor(HandlerExecutor handlerExecutor) {
+        this.handlerExecutor = handlerExecutor;
+    }
 
     /**
      * 处理方法
@@ -37,9 +47,8 @@ public abstract class EcologyHandleController {
             R extends EcologyRequest,
             H extends EcologyRequestHandler<R, T>> SuccessResponse handle(R request,
                                                                           Class<H> handlerClass) throws Exception {
-        if (null == handlerClass) {
-            throw new IllegalArgumentException("The handlerClass can not be null.");
-        }
+        Assert.notNull(request, "The request should not be null.");
+        Assert.notNull(handlerClass, "The handlerClass should not be null.");
         H handler = appContext.getBean(handlerClass);
         return handlerExecutor.execute(request, handler);
     }
@@ -53,6 +62,7 @@ public abstract class EcologyHandleController {
      * @throws Exception 异常
      */
     public <R extends EcologyRequest> SuccessResponse handle(R request) throws Exception {
+        Assert.notNull(request, "The request should not be null.");
         return handlerExecutor.execute(request);
     }
 

@@ -1,4 +1,4 @@
-package com.github.mimiknight.kuca.ecology.core;
+package com.github.mimiknight.kuca.ecology.handler;
 
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
