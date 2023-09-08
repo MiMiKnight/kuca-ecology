@@ -93,8 +93,14 @@ public class HandlerInterceptorExecutor {
         if (!applyDoBefore(interceptors, request, response)) {
             return;
         }
-        // 执行handler
-        handler.handle(request, response);
+        try {
+            // 执行handler
+            handler.handle(request, response);
+        } catch (Exception ex) {
+            // 执行后置异常拦截
+            applyDoAfterThrowing(interceptors, request, response, ex);
+            return;
+        }
         // 批量执行后置拦截
         applyDoAfterReturn(interceptors, request, response);
     }
@@ -104,6 +110,8 @@ public class HandlerInterceptorExecutor {
      * <p>
      * 任意一个拦截方法返回false则不执行后续拦截，返回true则继续执行后续拦截逻辑
      *
+     * @param <Q>          接口入参泛型
+     * @param <P>          接口出参泛型
      * @param interceptors 拦截器集合
      * @param request      接口入参
      * @param response     接口出参
@@ -125,10 +133,12 @@ public class HandlerInterceptorExecutor {
     }
 
     /**
-     * 批量执行拦截器的后置拦截方法
+     * 批量执行拦截器的后置返回拦截方法
      * <p>
      * 任意一个拦截方法返回false则不执行后续拦截，返回true则继续执行后续拦截逻辑
      *
+     * @param <Q>          接口入参泛型
+     * @param <P>          接口出参泛型
      * @param interceptors 拦截器集合
      * @param request      接口入参
      * @param response     接口出参
@@ -146,7 +156,32 @@ public class HandlerInterceptorExecutor {
                 return;
             }
         }
+    }
 
+    /**
+     * 批量执行拦截器的后置异常拦截方法
+     * <p>
+     * 任意一个拦截方法返回false则不执行后续拦截，返回true则继续执行后续拦截逻辑
+     *
+     * @param interceptors 拦截器集合
+     * @param request      接口入参
+     * @param response     接口出参
+     * @param ex           传入的异常参数
+     * @throws Exception 被抛出的异常
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private <Q extends EcologyRequest, P extends EcologyResponse> void applyDoAfterThrowing(List<EcologyHandlerInterceptor<?, ?>> interceptors,
+                                                                                            Q request,
+                                                                                            P response,
+                                                                                            Exception ex) throws Exception {
+        boolean result;
+        for (int i = interceptors.size() - 1; i >= 0; i--) {
+            EcologyHandlerInterceptor interceptor = interceptors.get(i);
+            result = interceptor.doAfterThrowing(request, response, ex);
+            if (!result) {
+                return;
+            }
+        }
     }
 
 }

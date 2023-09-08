@@ -36,6 +36,13 @@ public class HandlerExecutor {
         this.interceptorExecutor = interceptorExecutor;
     }
 
+    private HandlerFilterExecutor filterExecutor;
+
+    @Autowired
+    public void setHandlerFilterExecutor(HandlerFilterExecutor filterExecutor) {
+        this.filterExecutor = filterExecutor;
+    }
+
     /**
      * 执行方法
      *
@@ -101,10 +108,12 @@ public class HandlerExecutor {
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>> void doService(Q request, P response, H handler) throws Exception {
 
-        boolean result = interceptorExecutor.execute(request, response, handler);
-        if (!result) {
-            handler.handle(request, response);
-        }
+//        boolean result = interceptorExecutor.execute(request, response, handler);
+//        if (!result) {
+//            handler.handle(request, response);
+//        }
+
+        this.filterExecutor.execute(request, response, handler);
     }
 
     /**

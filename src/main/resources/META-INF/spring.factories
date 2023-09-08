@@ -2,4 +2,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.github.mimiknight.kuca.ecology.handler.HandlerBox,\
   com.github.mimiknight.kuca.ecology.interceptor.HandlerInterceptorBox,\
   com.github.mimiknight.kuca.ecology.core.HandlerExecutor,\
-  com.github.mimiknight.kuca.ecology.core.HandlerInterceptorExecutor
+  com.github.mimiknight.kuca.ecology.core.HandlerInterceptorExecutor,\
+  com.github.mimiknight.kuca.ecology.filter.HandlerFilterBox,\
+  com.github.mimiknight.kuca.ecology.core.HandlerFilterExecutor

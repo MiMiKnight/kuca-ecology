@@ -25,7 +25,7 @@ public interface EcologyHandlerInterceptor<Q extends EcologyRequest, P extends E
     }
 
     /**
-     * 执行后置拦截
+     * 执行后置返回拦截
      *
      * @param request  接口入参
      * @param response 接口出参
@@ -34,6 +34,19 @@ public interface EcologyHandlerInterceptor<Q extends EcologyRequest, P extends E
      */
     default boolean doAfterReturn(Q request, P response) throws Exception {
         return true;
+    }
+
+    /**
+     * 执行后置异常拦截
+     *
+     * @param request  接口入参
+     * @param response 接口出参
+     * @param ex       传入的异常参数
+     * @return boolean
+     * @throws Exception 抛出异常
+     */
+    default boolean doAfterThrowing(Q request, P response, Exception ex) throws Exception {
+        throw ex;
     }
 
 }

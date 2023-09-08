@@ -1,4 +1,4 @@
-package com.github.mimiknight.kuca.ecology.interceptor;
+package com.github.mimiknight.kuca.ecology.filter;
 
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
@@ -22,29 +22,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 装载Handler拦截器的容器
+ * 装载Handler过滤器的容器
  *
- * @author victor2015yhm@gmail.com
- * @since 2023-03-15 18:33:30
+ * @author MiMiKnight victor2015yhm@gmail.com
+ * @since 2023-09-09 00:27:00
  */
-public class HandlerInterceptorBox {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class HandlerFilterBox {
 
     private interface Constant {
 
-        /**
-         * 初始化容量
-         */
-        int INIT_CAPACITY = 128;
+        int INIT_CAPACITY = 16;
 
-        /**
-         * 拦截器方法名
-         */
-        String DO_BEFORE_METHOD_NAME = "doBefore";
+        String DO_FILTER_METHOD_NAME = "doFilter";
 
-        /**
-         * 方法参数个数
-         */
-        int DO_BEFORE_METHOD_PARAMETER_COUNT = 2;
+        int DO_FILTER_METHOD_PARAMETER_COUNT = 3;
 
     }
 
@@ -56,61 +48,59 @@ public class HandlerInterceptorBox {
     }
 
     /**
-     * Handler拦截器Map
+     * Handler 过滤器Map
      */
-    private final ConcurrentMap<Class<EcologyRequest>, List<EcologyHandlerInterceptor<?, ?>>> handlerInterceptorMap;
+    private final ConcurrentMap<Class<EcologyRequest>, List<EcologyHandlerFilter>> handlerFilterMap;
 
     /**
      * 空参构造
      */
-    public HandlerInterceptorBox() {
-        this.handlerInterceptorMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+    public HandlerFilterBox() {
+        this.handlerFilterMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
     }
 
-    /**
-     * 初始化
-     */
     @PostConstruct
     public void init() {
-        initInterceptMap();
+        initFilterMap();
     }
 
+
     /**
-     * 初始化
+     * 初始化过滤器Map
      */
-    @SuppressWarnings({"rawtypes"})
-    public void initInterceptMap() {
-        Map<String, EcologyHandlerInterceptor> map = appContext.getBeansOfType(EcologyHandlerInterceptor.class);
+    public void initFilterMap() {
+        Map<String, EcologyHandlerFilter> map = appContext.getBeansOfType(EcologyHandlerFilter.class);
         if (MapUtils.isEmpty(map)) {
             return;
         }
-        buildInterceptorMap(map.values());
+        buildFilterMap(map.values());
     }
 
+
     /**
-     * 构建拦截器容器Map
+     * 构建过滤器Map
      *
-     * @param interceptors 拦截器集合
+     * @param filters 过滤器集合
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void buildInterceptorMap(Collection<EcologyHandlerInterceptor> interceptors) {
-        Assert.notEmpty(interceptors, "The interceptors argument is required; it must not be empty");
+    private void buildFilterMap(Collection<EcologyHandlerFilter> filters) {
+        Assert.notEmpty(filters, "The interceptors argument is required; it must not be empty");
 
-        HashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor>> map = new HashMap<>();
+        HashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerFilter>> map = new HashMap<>();
 
-        for (EcologyHandlerInterceptor interceptor : interceptors) { // outer
-            for (Method method : interceptor.getClass().getMethods()) { // inner
-                if (isDoBeforeMethod(method)) {
+        for (EcologyHandlerFilter filter : filters) { // outer
+            for (Method method : filter.getClass().getMethods()) { // inner
+                if (isDoFilterMethod(method)) {
                     Class<EcologyRequest> requestClass = (Class<EcologyRequest>) method.getParameterTypes()[0];
-                    sortIt(map, requestClass, interceptor);
+                    sortIt(map, requestClass, filter);
                     break;
                 }
             } // end inner
         } // end outer
 
-        for (Map.Entry<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor>> entry : map.entrySet()) { // outer
+        for (Map.Entry<Class<EcologyRequest>, TreeSet<EcologyHandlerFilter>> entry : map.entrySet()) { // outer
             Class<EcologyRequest> key = entry.getKey();
-            for (EcologyHandlerInterceptor interceptor : entry.getValue()) { // inner
+            for (EcologyHandlerFilter interceptor : entry.getValue()) { // inner
                 putIt(key, interceptor);
             } // end inner
         } // end outer
@@ -123,8 +113,8 @@ public class HandlerInterceptorBox {
      * @param value Map值
      */
     @SuppressWarnings({"rawtypes"})
-    private void putIt(Class<EcologyRequest> key, EcologyHandlerInterceptor value) {
-        this.handlerInterceptorMap.compute(key, (k, v) -> {
+    private void putIt(Class<EcologyRequest> key, EcologyHandlerFilter value) {
+        this.handlerFilterMap.compute(key, (k, v) -> {
             if (CollectionUtils.isEmpty(v)) {
                 v = new ArrayList<>();
             }
@@ -139,13 +129,13 @@ public class HandlerInterceptorBox {
      * @param value Map值
      */
     @SuppressWarnings({"rawtypes"})
-    private static void sortIt(HashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor>> map,
+    private static void sortIt(HashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerFilter>> map,
                                Class<EcologyRequest> key,
-                               EcologyHandlerInterceptor value) {
+                               EcologyHandlerFilter value) {
         // key如果不存在则新建TreeSet插入值，key如果已经存在则添加到TreeSet中
         map.compute(key, (k, v) -> {
             if (CollectionUtils.isEmpty(v)) {
-                v = new TreeSet<>(new HandlerInteceptorComparator<>());
+                v = new TreeSet<>(new HandlerFilterComparator<>());
             }
             v.add(value);
             return v;
@@ -153,7 +143,7 @@ public class HandlerInterceptorBox {
     }
 
     /**
-     * 当前方法是否为doBefore方法
+     * 当前方法是否为doFilter方法
      * <p>
      * public修改的方法；
      * 方法为非人工合成的；
@@ -164,30 +154,32 @@ public class HandlerInterceptorBox {
      * @param method 方法
      * @return boolean
      */
-    private boolean isDoBeforeMethod(Method method) {
+    private boolean isDoFilterMethod(Method method) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         return Modifier.isPublic(method.getModifiers())
                 && !method.isSynthetic()
-                && Constant.DO_BEFORE_METHOD_NAME.equals(method.getName())
-                && Constant.DO_BEFORE_METHOD_PARAMETER_COUNT == method.getParameterCount()
+                && Constant.DO_FILTER_METHOD_NAME.equals(method.getName())
+                && Constant.DO_FILTER_METHOD_PARAMETER_COUNT == method.getParameterCount()
                 && EcologyRequest.class.isAssignableFrom(parameterTypes[0])
-                && EcologyResponse.class.isAssignableFrom(parameterTypes[1]);
+                && EcologyResponse.class.isAssignableFrom(parameterTypes[1])
+                && HandlerFilterChain.class.isAssignableFrom(parameterTypes[2]);
 
     }
 
+
     /**
-     * 获取拦截器Map
+     * 获取过滤器Map
      *
-     * @return {@link ConcurrentHashMap}
+     * @return {@link ConcurrentMap}
      */
-    public ConcurrentMap<Class<EcologyRequest>, List<EcologyHandlerInterceptor<?, ?>>> getHandlerInterceptorMap() {
-        return handlerInterceptorMap;
+    public ConcurrentMap<Class<EcologyRequest>, List<EcologyHandlerFilter>> getHandlerFilterMap() {
+        return this.handlerFilterMap;
     }
 
     /**
-     * 自定义拦截器比较器
+     * 自定义过滤器比较器
      */
-    private static class HandlerInteceptorComparator<Q extends EcologyRequest, P extends EcologyResponse, I extends EcologyHandlerInterceptor<Q, P>> implements Comparator<I> {
+    private static class HandlerFilterComparator<Q extends EcologyRequest, P extends EcologyResponse, F extends EcologyHandlerFilter<Q, P>> implements Comparator<F> {
 
         /**
          * 比较方法
@@ -197,7 +189,7 @@ public class HandlerInterceptorBox {
          * @return int
          */
         @Override
-        public int compare(I o1, I o2) {
+        public int compare(F o1, F o2) {
             return Integer.compare(o1.getOrder(), o2.getOrder());
         }
     }
