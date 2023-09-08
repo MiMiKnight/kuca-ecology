@@ -13,6 +13,7 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * 装载Handler拦截器的容器
@@ -51,7 +52,7 @@ public class HandlerInterceptorBox {
     /**
      * Handler前置拦截器Map
      */
-    private final ConcurrentHashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> handlerInterceptorMap;
+    private final ConcurrentMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> handlerInterceptorMap;
 
     /**
      * 空参构造
@@ -133,8 +134,10 @@ public class HandlerInterceptorBox {
 
     /**
      * 获取拦截器Map
+     *
+     * @return {@link ConcurrentHashMap}
      */
-    public ConcurrentHashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> getHandlerInterceptorMap() {
+    public ConcurrentMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> getHandlerInterceptorMap() {
         return handlerInterceptorMap;
     }
 }

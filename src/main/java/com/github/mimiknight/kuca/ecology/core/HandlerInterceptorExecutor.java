@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Handler 拦截器执行器
@@ -37,17 +37,21 @@ public class HandlerInterceptorExecutor {
      * <p>
      * 当系统中没有注册的拦截器或者当前handler下没有注册的拦截器，则方法返回false，否则返回true
      *
+     * @param <Q>      接口入参泛型
+     * @param <P>      接口出参泛型
+     * @param <H>      接口处理器泛型
      * @param request  接口入参
      * @param response 接口出参
      * @param handler  业务处理器
      * @return boolean
+     * @throws Exception 被抛出的异常
      */
     public <Q extends EcologyRequest, P extends EcologyResponse, H extends EcologyRequestHandler<Q, P>> boolean execute(Q request, P response, H handler) throws Exception {
         Assert.notNull(request, "The request argument is required; it must not be null");
         Assert.notNull(response, "The response argument is required; it must not be null");
         Assert.notNull(handler, "The handler argument is required; it must not be null");
 
-        ConcurrentHashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> interceptorMap =
+        ConcurrentMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> interceptorMap =
                 interceptorBox.getHandlerInterceptorMap();
         // 系统中没有注册的拦截器
         if (MapUtils.isEmpty(interceptorMap)) {
@@ -70,9 +74,13 @@ public class HandlerInterceptorExecutor {
      * <p>
      * 任意一个拦截方法返回false则不执行后续拦截，返回true则继续执行后续拦截逻辑
      *
+     * @param <Q>          接口入参泛型
+     * @param <P>          接口出参泛型
+     * @param <H>          接口处理器泛型
      * @param interceptors 拦截器集合
      * @param request      接口入参
      * @param response     接口出参
+     * @param handler      业务处理器
      * @throws Exception 被抛出异常
      */
     private <Q extends EcologyRequest, P extends EcologyResponse, H extends EcologyRequestHandler<Q, P>> void doInterceptor(TreeSet<EcologyHandlerInterceptor<?, ?, ?>> interceptors,
