@@ -43,6 +43,30 @@ public class HandlerExecutor {
      * @param <P>     响应参数泛型
      * @param <H>     处理器泛型
      * @param request 请求参数对象
+     * @return {@link P} 响应
+     * @throws Exception 异常
+     */
+    @SuppressWarnings({"unchecked"})
+    public <Q extends EcologyRequest,
+            P extends EcologyResponse,
+            H extends EcologyRequestHandler<Q, P>> SuccessResponse execute(Q request) throws Exception {
+        // 通过请求参数Class获取handler
+        H handler = (H) handlerBox.getRequestHandlerMap().get(request.getClass());
+        if (null == handler) {
+            String requestName = request.getClass().getSimpleName();
+            log.error("The handler is undefined or not managed by spring,request class name = {}", requestName);
+            throw new HandlerNotFoundException("The handler is undefined or not managed by spring.");
+        }
+        return execute(request, handler);
+    }
+
+    /**
+     * 执行方法
+     *
+     * @param <Q>     请求参数泛型
+     * @param <P>     响应参数泛型
+     * @param <H>     处理器泛型
+     * @param request 请求参数对象
      * @param handler 处理器对象
      * @return {@link P} 响应
      * @throws Exception 异常
@@ -81,30 +105,6 @@ public class HandlerExecutor {
         if (!result) {
             handler.handle(request, response);
         }
-    }
-
-    /**
-     * 执行方法
-     *
-     * @param <Q>     请求参数泛型
-     * @param <P>     响应参数泛型
-     * @param <H>     处理器泛型
-     * @param request 请求参数对象
-     * @return {@link P} 响应
-     * @throws Exception 异常
-     */
-    @SuppressWarnings({"unchecked"})
-    public <Q extends EcologyRequest,
-            P extends EcologyResponse,
-            H extends EcologyRequestHandler<Q, P>> SuccessResponse execute(Q request) throws Exception {
-        // 通过请求参数Class获取handler
-        H handler = (H) handlerBox.getRequestHandlerMap().get(request.getClass());
-        if (null == handler) {
-            String requestName = request.getClass().getSimpleName();
-            log.error("The handler is undefined or not managed by spring,request class name = {}", requestName);
-            throw new HandlerNotFoundException("The handler is undefined or not managed by spring.");
-        }
-        return execute(request, handler);
     }
 
     /**
