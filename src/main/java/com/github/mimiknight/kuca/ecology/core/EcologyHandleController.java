@@ -47,8 +47,9 @@ public abstract class EcologyHandleController {
             R extends EcologyRequest,
             H extends EcologyRequestHandler<R, T>> SuccessResponse handle(R request,
                                                                           Class<H> handlerClass) throws Exception {
-        Assert.notNull(request, "The request should not be null.");
-        Assert.notNull(handlerClass, "The handlerClass should not be null.");
+        Assert.notNull(request, "The request argument is required; it must not be null");
+        Assert.notNull(handlerClass, "The handlerClass argument is required; it must not be null");
+
         H handler = appContext.getBean(handlerClass);
         return handlerExecutor.execute(request, handler);
     }

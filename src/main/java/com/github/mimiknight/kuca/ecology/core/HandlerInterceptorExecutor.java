@@ -12,7 +12,7 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import java.util.TreeSet;
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -51,18 +51,20 @@ public class HandlerInterceptorExecutor {
         Assert.notNull(response, "The response argument is required; it must not be null");
         Assert.notNull(handler, "The handler argument is required; it must not be null");
 
-        ConcurrentMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> interceptorMap =
+        ConcurrentMap<Class<EcologyRequest>, List<EcologyHandlerInterceptor<?, ?>>> interceptorMap =
                 interceptorBox.getHandlerInterceptorMap();
         // 系统中没有注册的拦截器
         if (MapUtils.isEmpty(interceptorMap)) {
             return false;
         }
+
         Class<?> requestClass = AopUtils.getTargetClass(request);
-        TreeSet<EcologyHandlerInterceptor<?, ?, ?>> interceptors = interceptorMap.get(requestClass);
+        List<EcologyHandlerInterceptor<?, ?>> interceptors = interceptorMap.get(requestClass);
         // 当前handler下没有注册的拦截器
         if (CollectionUtils.isEmpty(interceptors)) {
             return false;
         }
+
         // 执行拦截器
         doInterceptor(interceptors, request, response, handler);
         return true;
@@ -83,7 +85,7 @@ public class HandlerInterceptorExecutor {
      * @param handler      业务处理器
      * @throws Exception 被抛出异常
      */
-    private <Q extends EcologyRequest, P extends EcologyResponse, H extends EcologyRequestHandler<Q, P>> void doInterceptor(TreeSet<EcologyHandlerInterceptor<?, ?, ?>> interceptors,
+    private <Q extends EcologyRequest, P extends EcologyResponse, H extends EcologyRequestHandler<Q, P>> void doInterceptor(List<EcologyHandlerInterceptor<?, ?>> interceptors,
                                                                                                                             Q request,
                                                                                                                             P response,
                                                                                                                             H handler) throws Exception {
@@ -109,7 +111,7 @@ public class HandlerInterceptorExecutor {
      * @throws Exception 被抛出的异常
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private <Q extends EcologyRequest, P extends EcologyResponse> boolean applyDoBefore(TreeSet<EcologyHandlerInterceptor<?, ?, ?>> interceptors,
+    private <Q extends EcologyRequest, P extends EcologyResponse> boolean applyDoBefore(List<EcologyHandlerInterceptor<?, ?>> interceptors,
                                                                                         Q request,
                                                                                         P response) throws Exception {
         boolean result;
@@ -133,16 +135,18 @@ public class HandlerInterceptorExecutor {
      * @throws Exception 被抛出的异常
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private <Q extends EcologyRequest, P extends EcologyResponse> void applyDoAfterReturn(TreeSet<EcologyHandlerInterceptor<?, ?, ?>> interceptors,
+    private <Q extends EcologyRequest, P extends EcologyResponse> void applyDoAfterReturn(List<EcologyHandlerInterceptor<?, ?>> interceptors,
                                                                                           Q request,
                                                                                           P response) throws Exception {
         boolean result;
-        for (EcologyHandlerInterceptor interceptor : interceptors) {
+        for (int i = interceptors.size() - 1; i >= 0; i--) {
+            EcologyHandlerInterceptor interceptor = interceptors.get(i);
             result = interceptor.doAfterReturn(request, response);
             if (!result) {
                 return;
             }
         }
+
     }
 
 }

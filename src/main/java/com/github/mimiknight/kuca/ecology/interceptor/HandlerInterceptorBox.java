@@ -6,10 +6,16 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +58,7 @@ public class HandlerInterceptorBox {
     /**
      * Handler前置拦截器Map
      */
-    private final ConcurrentMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> handlerInterceptorMap;
+    private final ConcurrentMap<Class<EcologyRequest>, List<EcologyHandlerInterceptor<?, ?>>> handlerInterceptorMap;
 
     /**
      * 空参构造
@@ -78,33 +84,70 @@ public class HandlerInterceptorBox {
         if (MapUtils.isEmpty(map)) {
             return;
         }
-        for (EcologyHandlerInterceptor interceptor : map.values()) {
-            Method[] methods = interceptor.getClass().getMethods();
-            for (Method method : methods) {
-                buildInterceptorMap(method, interceptor);
-            }
-        } // end for
+        buildInterceptorMap(map.values());
     }
 
     /**
      * 构建拦截器容器Map
      *
-     * @param method      方法
-     * @param interceptor 拦截器
+     * @param interceptors 拦截器集合
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void buildInterceptorMap(Method method, EcologyHandlerInterceptor interceptor) {
-        if (!isDoBeforeMethod(method)) {
-            return;
-        }
-        Class<?> parameterType = method.getParameterTypes()[0];
-        Class<EcologyRequest> requestClass = (Class<EcologyRequest>) parameterType;
-        // key如果不存在则新建TreeSet插入值，key如果已经存在则添加到TreeSet中
-        this.handlerInterceptorMap.compute(requestClass, (k, v) -> {
+    private void buildInterceptorMap(Collection<EcologyHandlerInterceptor> interceptors) {
+        Assert.notEmpty(interceptors, "The interceptors argument is required; it must not be empty");
+
+        HashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor>> map = new HashMap<>();
+
+        for (EcologyHandlerInterceptor interceptor : interceptors) { // outer
+            for (Method method : interceptor.getClass().getMethods()) { // inner
+                if (isDoBeforeMethod(method)) {
+                    Class<EcologyRequest> requestClass = (Class<EcologyRequest>) method.getParameterTypes()[0];
+                    sortIt(map, requestClass, interceptor);
+                    break;
+                }
+            } // end inner
+        } // end outer
+
+        for (Map.Entry<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor>> entry : map.entrySet()) { // outer
+            Class<EcologyRequest> key = entry.getKey();
+            for (EcologyHandlerInterceptor interceptor : entry.getValue()) { // inner
+                putIt(key, interceptor);
+            } // end inner
+        } // end outer
+
+        map.clear();
+    }
+
+    /**
+     * @param key   Map键
+     * @param value Map值
+     */
+    @SuppressWarnings({"rawtypes"})
+    private void putIt(Class<EcologyRequest> key, EcologyHandlerInterceptor value) {
+        this.handlerInterceptorMap.compute(key, (k, v) -> {
             if (CollectionUtils.isEmpty(v)) {
-                v = new TreeSet<>();
+                v = new ArrayList<>();
             }
-            v.add(interceptor);
+            v.add(value);
+            return v;
+        });
+    }
+
+    /**
+     * @param map   Map容器
+     * @param key   Map键
+     * @param value Map值
+     */
+    @SuppressWarnings({"rawtypes"})
+    private static void sortIt(HashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor>> map,
+                               Class<EcologyRequest> key,
+                               EcologyHandlerInterceptor value) {
+        // key如果不存在则新建TreeSet插入值，key如果已经存在则添加到TreeSet中
+        map.compute(key, (k, v) -> {
+            if (CollectionUtils.isEmpty(v)) {
+                v = new TreeSet<>(new HandlerInteceptorComparator<>());
+            }
+            v.add(value);
             return v;
         });
     }
@@ -137,7 +180,25 @@ public class HandlerInterceptorBox {
      *
      * @return {@link ConcurrentHashMap}
      */
-    public ConcurrentMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> getHandlerInterceptorMap() {
+    public ConcurrentMap<Class<EcologyRequest>, List<EcologyHandlerInterceptor<?, ?>>> getHandlerInterceptorMap() {
         return handlerInterceptorMap;
+    }
+
+    /**
+     * 自定义拦截器比较器
+     */
+    private static class HandlerInteceptorComparator<Q extends EcologyRequest, P extends EcologyResponse, I extends EcologyHandlerInterceptor<Q, P>> implements Comparator<I> {
+
+        /**
+         * 比较方法
+         *
+         * @param o1 比较对象1
+         * @param o2 比较对象2
+         * @return int
+         */
+        @Override
+        public int compare(I o1, I o2) {
+            return Integer.compare(o1.getOrder(), o2.getOrder());
+        }
     }
 }
