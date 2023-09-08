@@ -1,5 +1,6 @@
 package com.github.mimiknight.kuca.ecology.handler;
 
+import com.github.mimiknight.kuca.ecology.exception.HandlerRepeatBindException;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import org.apache.commons.collections4.MapUtils;
@@ -123,11 +124,22 @@ public class HandlerBox {
             return;
         }
         Class<?>[] parameterTypes = method.getParameterTypes();
-        Class<?> requestClass = parameterTypes[0];
-        Class<?> responseClass = parameterTypes[1];
-
-        requestHandlerMap.put((Class<EcologyRequest>) requestClass, handler);
-        handlerResponseMap.put(handler, (Class<EcologyResponse>) responseClass);
+        Class<EcologyRequest> requestClass = (Class<EcologyRequest>) parameterTypes[0];
+        Class<EcologyResponse> responseClass = (Class<EcologyResponse>) parameterTypes[1];
+        // Handler与Request只允许一对一映射,不允许多个Handler绑定同一个Request
+        requestHandlerMap.compute(requestClass, (k, v) -> {
+            if (null != v) {
+                throw new HandlerRepeatBindException("The handler can not repeat bind request.");
+            }
+            return handler;
+        });
+        // Handler与Response只允许一对一映射,不允许多个Handler绑定同一个Response
+        handlerResponseMap.compute(handler, (k, v) -> {
+            if (null != v) {
+                throw new HandlerRepeatBindException("The handler can not repeat bind response.");
+            }
+            return responseClass;
+        });
     }
 
     /**

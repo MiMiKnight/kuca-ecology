@@ -1,6 +1,5 @@
 package com.github.mimiknight.kuca.ecology.interceptor;
 
-import com.github.mimiknight.kuca.ecology.handler.EcologyRequestHandler;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,12 +32,12 @@ public class HandlerInterceptorBox {
         /**
          * 拦截器方法名
          */
-        String DO_AROUND_METHOD_NAME = "doAround";
+        String DO_BEFORE_METHOD_NAME = "doBefore";
 
         /**
          * 方法参数个数
          */
-        int DO_AROUND_METHOD_PARAMETER_COUNT = 3;
+        int DO_BEFORE_METHOD_PARAMETER_COUNT = 2;
 
     }
 
@@ -52,7 +51,7 @@ public class HandlerInterceptorBox {
     /**
      * Handler前置拦截器Map
      */
-    private final ConcurrentHashMap<Class<EcologyRequestHandler<?, ?>>, TreeSet<EcologyHandlerInterceptor<?, ?, ?, ?>>> handlerInterceptorMap;
+    private final ConcurrentHashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> handlerInterceptorMap;
 
     /**
      * 空参构造
@@ -87,18 +86,20 @@ public class HandlerInterceptorBox {
     }
 
     /**
+     * 构建拦截器容器Map
+     *
      * @param method      方法
      * @param interceptor 拦截器
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void buildInterceptorMap(Method method, EcologyHandlerInterceptor interceptor) {
-        if (!isDoAroundMethod(method)) {
+        if (!isDoBeforeMethod(method)) {
             return;
         }
-        Class<?> parameterType = method.getParameterTypes()[2];
-        Class<EcologyRequestHandler<?, ?>> handlerClass = (Class<EcologyRequestHandler<?, ?>>) parameterType;
+        Class<?> parameterType = method.getParameterTypes()[0];
+        Class<EcologyRequest> requestClass = (Class<EcologyRequest>) parameterType;
         // key如果不存在则新建TreeSet插入值，key如果已经存在则添加到TreeSet中
-        this.handlerInterceptorMap.compute(handlerClass, (k, v) -> {
+        this.handlerInterceptorMap.compute(requestClass, (k, v) -> {
             if (CollectionUtils.isEmpty(v)) {
                 v = new TreeSet<>();
             }
@@ -108,35 +109,32 @@ public class HandlerInterceptorBox {
     }
 
     /**
-     * 当前方法是否为doAround()方法
+     * 当前方法是否为doBefore方法
      * <p>
      * public修改的方法；
      * 方法为非人工合成的；
-     * 方法名为doAround；
-     * 方法参数个数为3；
-     * 方法的第1个参数实现了EcologyRequest接口；
-     * 方法的第2个参数实现了EcologyResponse接口；
-     * 方法的第3个参数实现了EcologyRequestHandler接口；
+     * 匹配方法名；
+     * 匹配方法参数个数；
+     * 匹配方法参数类型；
      *
      * @param method 方法
      * @return boolean
      */
-    private boolean isDoAroundMethod(Method method) {
+    private boolean isDoBeforeMethod(Method method) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         return Modifier.isPublic(method.getModifiers())
                 && !method.isSynthetic()
-                && Constant.DO_AROUND_METHOD_NAME.equals(method.getName())
-                && Constant.DO_AROUND_METHOD_PARAMETER_COUNT == method.getParameterCount()
+                && Constant.DO_BEFORE_METHOD_NAME.equals(method.getName())
+                && Constant.DO_BEFORE_METHOD_PARAMETER_COUNT == method.getParameterCount()
                 && EcologyRequest.class.isAssignableFrom(parameterTypes[0])
-                && EcologyResponse.class.isAssignableFrom(parameterTypes[1])
-                && EcologyRequestHandler.class.isAssignableFrom(parameterTypes[2]);
+                && EcologyResponse.class.isAssignableFrom(parameterTypes[1]);
 
     }
 
     /**
      * 获取拦截器Map
      */
-    public ConcurrentHashMap<Class<EcologyRequestHandler<?, ?>>, TreeSet<EcologyHandlerInterceptor<?, ?, ?, ?>>> getHandlerInterceptorMap() {
+    public ConcurrentHashMap<Class<EcologyRequest>, TreeSet<EcologyHandlerInterceptor<?, ?, ?>>> getHandlerInterceptorMap() {
         return handlerInterceptorMap;
     }
 }
