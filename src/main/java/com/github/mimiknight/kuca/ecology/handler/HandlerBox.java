@@ -72,6 +72,22 @@ public class HandlerBox {
     }
 
     /**
+     * 初始化Map
+     */
+    @SuppressWarnings({"rawtypes"})
+    private void initRequestResponseHandlerMap() {
+        Map<String, EcologyRequestHandler> handlerMap = appContext.getBeansOfType(EcologyRequestHandler.class);
+        if (MapUtils.isEmpty(handlerMap)) {
+            return;
+        }
+        for (EcologyRequestHandler handler : handlerMap.values()) {
+            for (Method method : AopUtils.getTargetClass(handler).getMethods()) {
+                buildRequestResponseHandlerMap(handler, method);
+            }
+        }
+    }
+
+    /**
      * 当前方法是否为Handler的默认handle方法
      * <p>
      * public修改的方法；
@@ -96,24 +112,6 @@ public class HandlerBox {
     }
 
     /**
-     * 初始化Map
-     */
-    @SuppressWarnings({"rawtypes"})
-    private void initRequestResponseHandlerMap() {
-        Map<String, EcologyRequestHandler> handlerMap = appContext.getBeansOfType(EcologyRequestHandler.class);
-        if (MapUtils.isEmpty(handlerMap)) {
-            return;
-        }
-        for (EcologyRequestHandler handler : handlerMap.values()) {
-            for (Method method : AopUtils.getTargetClass(handler).getMethods()) {
-                if (isHandleMethod(method)) {
-                    buildRequestResponseHandlerMap(handler, method);
-                }
-            }
-        }
-    }
-
-    /**
      * 初始化requestHandlerMap、handlerResponseMap
      *
      * @param handler Handler对象
@@ -121,16 +119,15 @@ public class HandlerBox {
      */
     @SuppressWarnings({"unchecked"})
     private <H extends EcologyRequestHandler<?, ?>> void buildRequestResponseHandlerMap(H handler, Method method) {
+        if (!isHandleMethod(method)) {
+            return;
+        }
         Class<?>[] parameterTypes = method.getParameterTypes();
         Class<?> requestClass = parameterTypes[0];
         Class<?> responseClass = parameterTypes[1];
 
-        if (EcologyRequest.class.isAssignableFrom(requestClass)) {
-            requestHandlerMap.put((Class<EcologyRequest>) requestClass, handler);
-        }
-        if (EcologyResponse.class.isAssignableFrom(responseClass)) {
-            handlerResponseMap.put(handler, (Class<EcologyResponse>) responseClass);
-        }
+        requestHandlerMap.put((Class<EcologyRequest>) requestClass, handler);
+        handlerResponseMap.put(handler, (Class<EcologyResponse>) responseClass);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.github.mimiknight.kuca.ecology.interceptor;
 
+import com.github.mimiknight.kuca.ecology.handler.EcologyRequestHandler;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import org.apache.commons.collections4.CollectionUtils;
@@ -9,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +33,12 @@ public class HandlerInterceptorBox {
         /**
          * 拦截器方法名
          */
-        String INTERCEPT_METHOD_NAME = "intercept";
+        String DO_AROUND_METHOD_NAME = "doAround";
+
+        /**
+         * 方法参数个数
+         */
+        int DO_AROUND_METHOD_PARAMETER_COUNT = 3;
 
     }
 
@@ -45,105 +52,91 @@ public class HandlerInterceptorBox {
     /**
      * Handler前置拦截器Map
      */
-    private final ConcurrentHashMap<Class<EcologyRequest>, TreeSet<HandlerBeforeInterceptor<EcologyRequest>>> handlerBeforeInterceptorMap;
+    private final ConcurrentHashMap<Class<EcologyRequestHandler<?, ?>>, TreeSet<EcologyHandlerInterceptor<?, ?, ?, ?>>> handlerInterceptorMap;
 
     /**
-     * Handler后置拦截器Map
+     * 空参构造
      */
-    private final ConcurrentHashMap<Class<EcologyRequest>, TreeSet<HandlerAfterReturnInterceptor<EcologyRequest, EcologyResponse>>> handlerAfterReturnInterceptorMap;
-
-
     public HandlerInterceptorBox() {
-        this.handlerBeforeInterceptorMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
-        this.handlerAfterReturnInterceptorMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+        this.handlerInterceptorMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
     }
 
     /**
      * 初始化
-     *
-     * @throws NoSuchMethodException 没有这样方法异常
      */
     @PostConstruct
-    public void init() throws NoSuchMethodException {
+    public void init() {
         initInterceptMap();
     }
 
     /**
      * 初始化
-     *
-     * @throws NoSuchMethodException 没有这样方法异常
      */
-    public void initInterceptMap() throws NoSuchMethodException {
-        initBeforeHandlerMap();
-        initAfterReturnHandlerMap();
-    }
-
-    /**
-     * 初始化前置拦截器Map
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void initBeforeHandlerMap() throws NoSuchMethodException {
-        Map<String, HandlerBeforeInterceptor> map = appContext.getBeansOfType(HandlerBeforeInterceptor.class);
+    @SuppressWarnings({"rawtypes"})
+    public void initInterceptMap() {
+        Map<String, EcologyHandlerInterceptor> map = appContext.getBeansOfType(EcologyHandlerInterceptor.class);
         if (MapUtils.isEmpty(map)) {
             return;
         }
-        for (HandlerBeforeInterceptor interceptor : map.values()) {
-            Method method = interceptor.getClass().getMethod(Constant.INTERCEPT_METHOD_NAME, EcologyRequest.class);
-            Class<?> requestClass = method.getParameterTypes()[0];
-            this.handlerBeforeInterceptorMap.computeIfAbsent((Class<EcologyRequest>) requestClass, k -> new TreeSet<>()).add(interceptor);
+        for (EcologyHandlerInterceptor interceptor : map.values()) {
+            Method[] methods = interceptor.getClass().getMethods();
+            for (Method method : methods) {
+                buildInterceptorMap(method, interceptor);
+            }
         } // end for
     }
 
     /**
-     * 初始化后置拦截器Map
+     * @param method      方法
+     * @param interceptor 拦截器
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void initAfterReturnHandlerMap() throws NoSuchMethodException {
-        Map<String, HandlerAfterReturnInterceptor> map = appContext.getBeansOfType(HandlerAfterReturnInterceptor.class);
-        if (MapUtils.isEmpty(map)) {
+    private void buildInterceptorMap(Method method, EcologyHandlerInterceptor interceptor) {
+        if (!isDoAroundMethod(method)) {
             return;
         }
-        for (HandlerAfterReturnInterceptor interceptor : map.values()) {
-            Method method = interceptor.getClass().getMethod(Constant.INTERCEPT_METHOD_NAME, EcologyRequest.class, EcologyResponse.class);
-            Class<?> requestClass = method.getParameterTypes()[0];
-            this.handlerAfterReturnInterceptorMap.computeIfAbsent((Class<EcologyRequest>) requestClass, k -> new TreeSet<>()).add(interceptor);
-        } // end for
+        Class<?> parameterType = method.getParameterTypes()[2];
+        Class<EcologyRequestHandler<?, ?>> handlerClass = (Class<EcologyRequestHandler<?, ?>>) parameterType;
+        // key如果不存在则新建TreeSet插入值，key如果已经存在则添加到TreeSet中
+        this.handlerInterceptorMap.compute(handlerClass, (k, v) -> {
+            if (CollectionUtils.isEmpty(v)) {
+                v = new TreeSet<>();
+            }
+            v.add(interceptor);
+            return v;
+        });
     }
 
     /**
-     * 执行前置拦截器
+     * 当前方法是否为doAround()方法
+     * <p>
+     * public修改的方法；
+     * 方法为非人工合成的；
+     * 方法名为doAround；
+     * 方法参数个数为3；
+     * 方法的第1个参数实现了EcologyRequest接口；
+     * 方法的第2个参数实现了EcologyResponse接口；
+     * 方法的第3个参数实现了EcologyRequestHandler接口；
      *
-     * @param request 请求参数
+     * @param method 方法
+     * @return boolean
      */
-    public void doBeforeInterceptor(EcologyRequest request) throws Exception {
-        ConcurrentHashMap<Class<EcologyRequest>, TreeSet<HandlerBeforeInterceptor<EcologyRequest>>> interceptorMap =
-                this.handlerBeforeInterceptorMap;
-        if (MapUtils.isEmpty(interceptorMap) || CollectionUtils.isEmpty(interceptorMap.get(request.getClass()))) {
-            return;
-        }
-        TreeSet<HandlerBeforeInterceptor<EcologyRequest>> interceptors = interceptorMap.get(request.getClass());
-        for (HandlerBeforeInterceptor<EcologyRequest> interceptor : interceptors) {
-            interceptor.intercept(request);
-        }
+    private boolean isDoAroundMethod(Method method) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        return Modifier.isPublic(method.getModifiers())
+                && !method.isSynthetic()
+                && Constant.DO_AROUND_METHOD_NAME.equals(method.getName())
+                && Constant.DO_AROUND_METHOD_PARAMETER_COUNT == method.getParameterCount()
+                && EcologyRequest.class.isAssignableFrom(parameterTypes[0])
+                && EcologyResponse.class.isAssignableFrom(parameterTypes[1])
+                && EcologyRequestHandler.class.isAssignableFrom(parameterTypes[2]);
+
     }
 
     /**
-     * 执行后置拦截器
-     *
-     * @param request  请求参数
-     * @param response 响应参数
+     * 获取拦截器Map
      */
-    public void doAfterReturnInterceptor(EcologyRequest request, EcologyResponse response) throws Exception {
-        ConcurrentHashMap<Class<EcologyRequest>, TreeSet<HandlerAfterReturnInterceptor<EcologyRequest, EcologyResponse>>> interceptorMap =
-                this.handlerAfterReturnInterceptorMap;
-        if (MapUtils.isEmpty(interceptorMap) || CollectionUtils.isEmpty(interceptorMap.get(request.getClass()))) {
-            return;
-        }
-        TreeSet<HandlerAfterReturnInterceptor<EcologyRequest, EcologyResponse>> interceptors = interceptorMap.get(request.getClass());
-        for (HandlerAfterReturnInterceptor<EcologyRequest, EcologyResponse> interceptor : interceptors) {
-            interceptor.intercept(request, response);
-        }
+    public ConcurrentHashMap<Class<EcologyRequestHandler<?, ?>>, TreeSet<EcologyHandlerInterceptor<?, ?, ?, ?>>> getHandlerInterceptorMap() {
+        return handlerInterceptorMap;
     }
-
-
 }

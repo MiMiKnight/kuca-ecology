@@ -9,7 +9,7 @@ import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
  * @author victor2015yhm@gmail.com
  * @since 2022-10-06 18:41:11
  */
-public interface EcologyRequestHandler<R extends EcologyRequest, T extends EcologyResponse> {
+public interface EcologyRequestHandler<Q extends EcologyRequest, P extends EcologyResponse> {
 
     /**
      * 处理方法
@@ -18,6 +18,6 @@ public interface EcologyRequestHandler<R extends EcologyRequest, T extends Ecolo
      * @param response 响应参数
      * @throws Exception 异常
      */
-    void handle(R request, T response) throws Exception;
+    void handle(Q request, P response) throws Exception;
 
 }
