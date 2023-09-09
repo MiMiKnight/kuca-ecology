@@ -54,7 +54,7 @@ public abstract class EcologyHandleController {
      * @throws Exception 异常
      */
     public <R extends EcologyRequest> SuccessResponse handle(R request) throws Exception {
-        Assert.notNull(request, "The request should not be null.");
+        Assert.notNull(request, "The request argument is required; it must not be null");
         return handlerExecutor.execute(request);
     }
 
