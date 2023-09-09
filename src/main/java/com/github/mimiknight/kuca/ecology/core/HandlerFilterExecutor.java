@@ -7,6 +7,7 @@ import com.github.mimiknight.kuca.ecology.filter.HandlerFilterChainFactory;
 import com.github.mimiknight.kuca.ecology.handler.EcologyRequestHandler;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -40,6 +41,9 @@ public class HandlerFilterExecutor {
         Class<EcologyRequest> requestClass = (Class<EcologyRequest>) request.getClass();
         // 获取过滤器
         List<EcologyHandlerFilter> filters = handlerFilterBox.getHandlerFilterByKey(requestClass);
+        if (CollectionUtils.isEmpty(filters)) {
+            return;
+        }
         // 获取过滤器链
         HandlerFilterChain filterChain = HandlerFilterChainFactory.getFilterChain();
         // 初始化过滤器链参数
