@@ -26,17 +26,17 @@ public abstract class EcologyHandleController {
     /**
      * 处理方法
      *
-     * @param request      请求参数
-     * @param handlerClass 处理类对象
-     * @param <T>          接口响应对象类型泛型
-     * @param <R>          接口请求对象类型泛型
-     * @param <H>          请求处理器对象类型泛型
+     * @param <Q>          接口入参泛型
+     * @param <P>          接口出参泛型
+     * @param <H>          业务处理器泛型
+     * @param request      接口入参
+     * @param handlerClass 业务处理器Class对象
      * @return response 响应参数
      * @throws Exception 异常
      */
-    public <T extends EcologyResponse,
-            R extends EcologyRequest,
-            H extends EcologyRequestHandler<R, T>> SuccessResponse handle(R request,
+    public <Q extends EcologyRequest,
+            P extends EcologyResponse,
+            H extends EcologyRequestHandler<Q, P>> SuccessResponse handle(Q request,
                                                                           Class<H> handlerClass) throws Exception {
         Assert.notNull(request, "The request argument is required; it must not be null");
         Assert.notNull(handlerClass, "The handlerClass argument is required; it must not be null");
@@ -48,12 +48,12 @@ public abstract class EcologyHandleController {
     /**
      * 处理方法
      *
-     * @param <R>     请求参数对象类型
-     * @param request 请求参数
+     * @param <Q>     接口入参泛型
+     * @param request 接口入参
      * @return response 响应参数
      * @throws Exception 异常
      */
-    public <R extends EcologyRequest> SuccessResponse handle(R request) throws Exception {
+    public <Q extends EcologyRequest> SuccessResponse handle(Q request) throws Exception {
         Assert.notNull(request, "The request argument is required; it must not be null");
         return handlerExecutor.execute(request);
     }
