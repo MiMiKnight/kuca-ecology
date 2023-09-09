@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,6 @@ public class HandlerFilterBox {
     @PostConstruct
     public void init() {
         initFilterMap();
-//        initFilterChainMap();
     }
 
 
@@ -171,6 +171,19 @@ public class HandlerFilterBox {
      */
     public ConcurrentMap<Class<EcologyRequest>, List<EcologyHandlerFilter>> getHandlerFilterMap() {
         return this.handlerFilterMap;
+    }
+
+    /**
+     * 根据键获取过滤器
+     *
+     * @param key Map键值
+     * @return {@link List}
+     */
+    public List<EcologyHandlerFilter> getHandlerFilterByKey(Class<EcologyRequest> key) {
+        if (MapUtils.isEmpty(handlerFilterMap)) {
+            return Collections.emptyList();
+        }
+        return this.getHandlerFilterMap().get(key);
     }
 
     /**

@@ -69,24 +69,20 @@ public interface HandlerFilterChain {
      * @param <Q>     接口入参泛型
      * @param <P>     接口出参泛型
      * @param <H>     业务处理器泛型
-     * @param request 接口入参
+     * @param <F>     过滤器泛型
      * @param handler 接口业务处理器
      * @param filters 接口过滤器接口
-     * @return {@link HandlerFilterChain}
      */
     default <Q extends EcologyRequest,
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>,
-            F extends EcologyHandlerFilter<Q, P>> HandlerFilterChain init(Q request, H handler, List<F> filters) {
+            F extends EcologyHandlerFilter<Q, P>> void init(H handler, List<F> filters) {
+        // 设置目标对象
         this.setTarget(handler);
+        // 设置过滤器
         if (CollectionUtils.isNotEmpty(filters)) {
             this.addFilter(filters);
         }
-        return this;
     }
 
-    /**
-     * 重置Position
-     */
-    void resetPosition();
 }

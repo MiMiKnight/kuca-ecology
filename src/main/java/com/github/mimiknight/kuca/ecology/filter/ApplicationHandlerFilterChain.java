@@ -18,20 +18,24 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
 
     private final List<EcologyHandlerFilter> filters;
 
-    private EcologyRequestHandler handler;
-
     private int position;
+
+    private EcologyRequestHandler handler;
 
     public ApplicationHandlerFilterChain() {
         this.filters = new ArrayList<>();
+        this.position = 0;
     }
 
     @Override
     public <Q extends EcologyRequest,
             P extends EcologyResponse> void doFilter(Q request, P response) throws Exception {
+        // 递归执行过滤器
         if (position < filters.size()) {
             EcologyHandlerFilter filter = filters.get(position++);
+            filter.init();
             filter.doFilter(request, response, this);
+            filter.destroy();
             return;
         }
         // 执行业务逻辑
@@ -58,10 +62,5 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>> void setTarget(H target) {
         this.handler = target;
-    }
-
-    @Override
-    public void resetPosition() {
-        this.position = 0;
     }
 }
