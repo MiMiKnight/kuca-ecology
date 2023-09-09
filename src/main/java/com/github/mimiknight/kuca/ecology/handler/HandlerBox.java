@@ -41,13 +41,8 @@ public class HandlerBox {
         int HANDLE_METHOD_PARAMETER_COUNT = 2;
 
     }
-
-    private ApplicationContext appContext;
-
     @Autowired
-    public void setAppContext(ApplicationContext appContext) {
-        this.appContext = appContext;
-    }
+    private ApplicationContext appContext;
 
     /**
      * 请求对象与handler对应Map

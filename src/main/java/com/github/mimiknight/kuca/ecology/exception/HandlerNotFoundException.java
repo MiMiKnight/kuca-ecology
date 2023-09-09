@@ -14,16 +14,13 @@ public class HandlerNotFoundException extends RuntimeException {
         super();
     }
 
-
     public HandlerNotFoundException(String message) {
         super(message);
     }
 
-
     public HandlerNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-
 
     public HandlerNotFoundException(Throwable cause) {
         super(cause);

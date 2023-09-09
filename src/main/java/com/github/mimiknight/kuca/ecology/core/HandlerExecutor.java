@@ -8,7 +8,6 @@ import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import com.github.mimiknight.kuca.ecology.model.response.SuccessResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,27 +20,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class HandlerExecutor {
 
-
+    @Autowired
     private HandlerBox handlerBox;
 
     @Autowired
-    public void setHandlerBox(HandlerBox handlerBox) {
-        this.handlerBox = handlerBox;
-    }
-
     private HandlerInterceptorExecutor interceptorExecutor;
 
     @Autowired
-    public void setHandlerInterceptorExecutor(HandlerInterceptorExecutor interceptorExecutor) {
-        this.interceptorExecutor = interceptorExecutor;
-    }
-
     private HandlerFilterExecutor filterExecutor;
-
-    @Autowired
-    public void setHandlerFilterExecutor(HandlerFilterExecutor filterExecutor) {
-        this.filterExecutor = filterExecutor;
-    }
 
     /**
      * 执行方法
@@ -93,12 +79,15 @@ public class HandlerExecutor {
         // 执行业务逻辑
         doService(request, response, handler);
         // 构建成功响应
-        return buildSuccessResponse(response);
+        return SuccessResponse.buildSuccessResponse(response);
     }
 
     /**
      * 执行业务逻辑
      *
+     * @param <Q>     请求参数泛型
+     * @param <P>     响应参数泛型
+     * @param <H>     处理器泛型
      * @param request  请求参数
      * @param response 响应参数
      * @param handler  执行器
@@ -113,17 +102,7 @@ public class HandlerExecutor {
 //            handler.handle(request, response);
 //        }
 
-        this.filterExecutor.execute(request, response, handler);
+        this.filterExecutor.execute(request, response);
     }
 
-    /**
-     * 构建成功响应参数封装对象
-     *
-     * @param <P>      响应参数泛型
-     * @param response 响应参数
-     * @return {@link SuccessResponse}<{@link P}>
-     */
-    private <P extends EcologyResponse> SuccessResponse buildSuccessResponse(P response) {
-        return SuccessResponse.builder().statusCode(HttpStatus.OK.value()).data(response).build();
-    }
 }

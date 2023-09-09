@@ -17,20 +17,11 @@ import org.springframework.util.Assert;
  */
 @Slf4j
 public abstract class EcologyHandleController {
-
+    @Autowired
     private ApplicationContext appContext;
 
     @Autowired
-    public void setAppContext(ApplicationContext appContext) {
-        this.appContext = appContext;
-    }
-
     private HandlerExecutor handlerExecutor;
-
-    @Autowired
-    public void setHandlerExecutor(HandlerExecutor handlerExecutor) {
-        this.handlerExecutor = handlerExecutor;
-    }
 
     /**
      * 处理方法

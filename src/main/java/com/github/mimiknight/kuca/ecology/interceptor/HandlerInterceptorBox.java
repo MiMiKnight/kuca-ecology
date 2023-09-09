@@ -48,12 +48,8 @@ public class HandlerInterceptorBox {
 
     }
 
-    private ApplicationContext appContext;
-
     @Autowired
-    public void setAppContext(ApplicationContext appContext) {
-        this.appContext = appContext;
-    }
+    private ApplicationContext appContext;
 
     /**
      * Handler拦截器Map
@@ -187,15 +183,10 @@ public class HandlerInterceptorBox {
     /**
      * 自定义拦截器比较器
      */
-    private static class HandlerInteceptorComparator<Q extends EcologyRequest, P extends EcologyResponse, I extends EcologyHandlerInterceptor<Q, P>> implements Comparator<I> {
+    private static class HandlerInteceptorComparator<Q extends EcologyRequest,
+            P extends EcologyResponse,
+            I extends EcologyHandlerInterceptor<Q, P>> implements Comparator<I> {
 
-        /**
-         * 比较方法
-         *
-         * @param o1 比较对象1
-         * @param o2 比较对象2
-         * @return int
-         */
         @Override
         public int compare(I o1, I o2) {
             return Integer.compare(o1.getOrder(), o2.getOrder());

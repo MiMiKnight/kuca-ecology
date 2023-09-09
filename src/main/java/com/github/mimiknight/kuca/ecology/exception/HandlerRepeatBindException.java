@@ -13,16 +13,13 @@ public class HandlerRepeatBindException extends RuntimeException {
         super();
     }
 
-
     public HandlerRepeatBindException(String message) {
         super(message);
     }
 
-
     public HandlerRepeatBindException(String message, Throwable cause) {
         super(message, cause);
     }
-
 
     public HandlerRepeatBindException(Throwable cause) {
         super(cause);

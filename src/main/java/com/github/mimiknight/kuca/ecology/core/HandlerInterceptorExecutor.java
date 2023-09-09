@@ -24,13 +24,8 @@ import java.util.concurrent.ConcurrentMap;
 @Slf4j
 public class HandlerInterceptorExecutor {
 
-    private HandlerInterceptorBox interceptorBox;
-
     @Autowired
-    public void setInterceptorBox(HandlerInterceptorBox interceptorBox) {
-        this.interceptorBox = interceptorBox;
-    }
-
+    private HandlerInterceptorBox interceptorBox;
 
     /**
      * 拦截器执行方法
@@ -46,7 +41,9 @@ public class HandlerInterceptorExecutor {
      * @return boolean
      * @throws Exception 被抛出的异常
      */
-    public <Q extends EcologyRequest, P extends EcologyResponse, H extends EcologyRequestHandler<Q, P>> boolean execute(Q request, P response, H handler) throws Exception {
+    public <Q extends EcologyRequest,
+            P extends EcologyResponse,
+            H extends EcologyRequestHandler<Q, P>> boolean execute(Q request, P response, H handler) throws Exception {
         Assert.notNull(request, "The request argument is required; it must not be null");
         Assert.notNull(response, "The response argument is required; it must not be null");
         Assert.notNull(handler, "The handler argument is required; it must not be null");
@@ -85,10 +82,12 @@ public class HandlerInterceptorExecutor {
      * @param handler      业务处理器
      * @throws Exception 被抛出异常
      */
-    private <Q extends EcologyRequest, P extends EcologyResponse, H extends EcologyRequestHandler<Q, P>> void doInterceptor(List<EcologyHandlerInterceptor<?, ?>> interceptors,
-                                                                                                                            Q request,
-                                                                                                                            P response,
-                                                                                                                            H handler) throws Exception {
+    private <Q extends EcologyRequest,
+            P extends EcologyResponse,
+            H extends EcologyRequestHandler<Q, P>> void doInterceptor(List<EcologyHandlerInterceptor<?, ?>> interceptors,
+                                                                      Q request,
+                                                                      P response,
+                                                                      H handler) throws Exception {
         // 批量执行前置拦截
         if (!applyDoBefore(interceptors, request, response)) {
             return;
@@ -119,9 +118,10 @@ public class HandlerInterceptorExecutor {
      * @throws Exception 被抛出的异常
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private <Q extends EcologyRequest, P extends EcologyResponse> boolean applyDoBefore(List<EcologyHandlerInterceptor<?, ?>> interceptors,
-                                                                                        Q request,
-                                                                                        P response) throws Exception {
+    private <Q extends EcologyRequest,
+            P extends EcologyResponse> boolean applyDoBefore(List<EcologyHandlerInterceptor<?, ?>> interceptors,
+                                                             Q request,
+                                                             P response) throws Exception {
         boolean result;
         for (EcologyHandlerInterceptor interceptor : interceptors) {
             result = interceptor.doBefore(request, response);
@@ -145,9 +145,10 @@ public class HandlerInterceptorExecutor {
      * @throws Exception 被抛出的异常
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private <Q extends EcologyRequest, P extends EcologyResponse> void applyDoAfterReturn(List<EcologyHandlerInterceptor<?, ?>> interceptors,
-                                                                                          Q request,
-                                                                                          P response) throws Exception {
+    private <Q extends EcologyRequest,
+            P extends EcologyResponse> void applyDoAfterReturn(List<EcologyHandlerInterceptor<?, ?>> interceptors,
+                                                               Q request,
+                                                               P response) throws Exception {
         boolean result;
         for (int i = interceptors.size() - 1; i >= 0; i--) {
             EcologyHandlerInterceptor interceptor = interceptors.get(i);
@@ -163,6 +164,8 @@ public class HandlerInterceptorExecutor {
      * <p>
      * 任意一个拦截方法返回false则不执行后续拦截，返回true则继续执行后续拦截逻辑
      *
+     * @param <Q>          接口入参泛型
+     * @param <P>          接口出参泛型
      * @param interceptors 拦截器集合
      * @param request      接口入参
      * @param response     接口出参
@@ -170,10 +173,11 @@ public class HandlerInterceptorExecutor {
      * @throws Exception 被抛出的异常
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private <Q extends EcologyRequest, P extends EcologyResponse> void applyDoAfterThrowing(List<EcologyHandlerInterceptor<?, ?>> interceptors,
-                                                                                            Q request,
-                                                                                            P response,
-                                                                                            Exception ex) throws Exception {
+    private <Q extends EcologyRequest,
+            P extends EcologyResponse> void applyDoAfterThrowing(List<EcologyHandlerInterceptor<?, ?>> interceptors,
+                                                                 Q request,
+                                                                 P response,
+                                                                 Exception ex) throws Exception {
         boolean result;
         for (int i = interceptors.size() - 1; i >= 0; i--) {
             EcologyHandlerInterceptor interceptor = interceptors.get(i);

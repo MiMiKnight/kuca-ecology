@@ -40,12 +40,8 @@ public class HandlerFilterBox {
 
     }
 
-    private ApplicationContext appContext;
-
     @Autowired
-    public void setAppContext(ApplicationContext appContext) {
-        this.appContext = appContext;
-    }
+    private ApplicationContext appContext;
 
     /**
      * Handler 过滤器Map
@@ -62,6 +58,7 @@ public class HandlerFilterBox {
     @PostConstruct
     public void init() {
         initFilterMap();
+//        initFilterChainMap();
     }
 
 
@@ -179,15 +176,10 @@ public class HandlerFilterBox {
     /**
      * 自定义过滤器比较器
      */
-    private static class HandlerFilterComparator<Q extends EcologyRequest, P extends EcologyResponse, F extends EcologyHandlerFilter<Q, P>> implements Comparator<F> {
+    private static class HandlerFilterComparator<Q extends EcologyRequest,
+            P extends EcologyResponse,
+            F extends EcologyHandlerFilter<Q, P>> implements Comparator<F> {
 
-        /**
-         * 比较方法
-         *
-         * @param o1 比较对象1
-         * @param o2 比较对象2
-         * @return int
-         */
         @Override
         public int compare(F o1, F o2) {
             return Integer.compare(o1.getOrder(), o2.getOrder());
