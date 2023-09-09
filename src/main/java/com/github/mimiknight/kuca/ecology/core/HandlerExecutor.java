@@ -68,6 +68,7 @@ public class HandlerExecutor {
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>> SuccessResponse execute(Q request, H handler) throws Exception {
+
         Class<?> responseClass = handlerBox.getHandlerResponseMap().get(handler);
         if (null == responseClass) {
             String handlerName = handler.getClass().getSimpleName();
@@ -97,10 +98,6 @@ public class HandlerExecutor {
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>> void doService(Q request, P response, H handler) throws Exception {
 
-//        boolean result = interceptorExecutor.execute(request, response, handler);
-//        if (!result) {
-//            handler.handle(request, response);
-//        }
         // 执行过滤器
         this.filterExecutor.execute(request, response, handler);
     }
