@@ -12,5 +12,5 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
  */
 @Getter
 @Setter
-public class StreamFileResponse extends FileResponse<StreamingResponseBody> {
+public class StreamFileResponse extends NormalResponse<StreamingResponseBody> {
 }

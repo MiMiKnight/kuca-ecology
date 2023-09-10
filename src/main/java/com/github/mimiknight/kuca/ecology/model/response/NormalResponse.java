@@ -8,14 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 /**
- * 文件响应对象
+ * 普通响应对象
  *
  * @author victor2015yhm@gmail.com
  * @since 2023-03-09 19:58:20
  */
 @Getter
 @Setter
-public class FileResponse<B> implements EcologyResponse {
+public class NormalResponse<B> implements EcologyResponse {
 
     /**
      * 响应头
@@ -28,18 +28,22 @@ public class FileResponse<B> implements EcologyResponse {
     private MediaType mediaType;
 
     /**
-     * 文件输入流 或者 StreamingResponseBody
+     * 响应体
+     * <p>
+     * 输出JSON：实体类对象
+     * <p>
+     * 输出文件：InputStream 或者 StreamingResponseBody
      */
     private B body;
 
     /**
      * 构建成功响应参数封装对象
      *
-     * @param <B>      文件输入流 或者 StreamingResponseBody
+     * @param <B>      响应Body泛型
      * @param response 响应参数
-     * @return {@link SuccessResponse}
+     * @return {@link ResponseEntity}
      */
-    public static <B> ResponseEntity<B> buildResponse(FileResponse<B> response) {
+    public static <B> ResponseEntity<B> buildResponse(NormalResponse<B> response) {
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(response.getHeader())
                 .contentType(response.getMediaType())

@@ -82,7 +82,7 @@ public class HandlerExecutor {
         // 执行业务逻辑
         doService(request, response, handler);
         // 构建成功响应
-        return SuccessResponseBuilder.build(response);
+        return ResponseBuilder.build(response);
     }
 
     /**
