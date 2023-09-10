@@ -32,24 +32,28 @@ public interface HandlerFilterChain {
      *
      * @param <Q>    接口入参泛型
      * @param <P>    接口出参泛型
+     * @param <H>    处理器泛型
      * @param <F>    过滤器泛型
      * @param filter 过滤器对象
      */
     <Q extends EcologyRequest,
             P extends EcologyResponse,
-            F extends EcologyHandlerFilter<Q, P>> void addFilter(F filter);
+            H extends EcologyRequestHandler<Q, P>,
+            F extends EcologyHandlerFilter<Q, P, H>> void addFilter(F filter);
 
     /**
      * 添加过滤器
      *
      * @param <Q>     接口入参泛型
      * @param <P>     接口出参泛型
+     * @param <H>     处理器泛型
      * @param <F>     过滤器泛型
      * @param filters 过滤器对象集合
      */
     <Q extends EcologyRequest,
             P extends EcologyResponse,
-            F extends EcologyHandlerFilter<Q, P>> void addFilter(List<F> filters);
+            H extends EcologyRequestHandler<Q, P>,
+            F extends EcologyHandlerFilter<Q, P, H>> void addFilter(List<F> filters);
 
     /**
      * 设置过滤目标对象
@@ -76,7 +80,7 @@ public interface HandlerFilterChain {
     default <Q extends EcologyRequest,
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>,
-            F extends EcologyHandlerFilter<Q, P>> void init(H handler, List<F> filters) {
+            F extends EcologyHandlerFilter<Q, P, H>> void init(H handler, List<F> filters) {
         // 设置目标对象
         this.setTarget(handler);
         // 设置过滤器

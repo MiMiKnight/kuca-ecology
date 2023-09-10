@@ -45,7 +45,8 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
     @Override
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
-            F extends EcologyHandlerFilter<Q, P>> void addFilter(F filter) {
+            H extends EcologyRequestHandler<Q, P>,
+            F extends EcologyHandlerFilter<Q, P, H>> void addFilter(F filter) {
         this.filters.add(filter);
     }
 
@@ -53,7 +54,8 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
     @Override
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
-            F extends EcologyHandlerFilter<Q, P>> void addFilter(List<F> filters) {
+            H extends EcologyRequestHandler<Q, P>,
+            F extends EcologyHandlerFilter<Q, P, H>> void addFilter(List<F> filters) {
         this.filters.addAll(filters);
     }
 

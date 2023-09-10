@@ -1,5 +1,6 @@
 package com.github.mimiknight.kuca.ecology.filter;
 
+import com.github.mimiknight.kuca.ecology.handler.EcologyRequestHandler;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import org.apache.commons.collections4.CollectionUtils;
@@ -191,7 +192,8 @@ public class HandlerFilterBox {
      */
     private static class HandlerFilterComparator<Q extends EcologyRequest,
             P extends EcologyResponse,
-            F extends EcologyHandlerFilter<Q, P>> implements Comparator<F> {
+            H extends EcologyRequestHandler<Q, P>,
+            F extends EcologyHandlerFilter<Q, P, H>> implements Comparator<F> {
 
         @Override
         public int compare(F o1, F o2) {
