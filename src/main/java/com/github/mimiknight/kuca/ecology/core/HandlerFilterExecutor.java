@@ -41,9 +41,6 @@ public class HandlerFilterExecutor {
         Class<EcologyRequest> requestClass = (Class<EcologyRequest>) request.getClass();
         // 获取过滤器
         List<EcologyHandlerFilter> filters = handlerFilterBox.getHandlerFilterByKey(requestClass);
-        if (CollectionUtils.isEmpty(filters)) {
-            return;
-        }
         // 获取过滤器链
         HandlerFilterChain filterChain = HandlerFilterChainFactory.getFilterChain();
         // 初始化过滤器链参数

@@ -1,6 +1,6 @@
 package com.github.mimiknight.kuca.ecology.handler;
 
-import com.github.mimiknight.kuca.ecology.exception.HandlerRepeatBindException;
+import com.github.mimiknight.kuca.ecology.exception.RequestRepeatBindException;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentMap;
  * @since 2023-03-15 19:16:53
  */
 @Slf4j
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class HandlerBox {
 
     private interface Constant {
@@ -48,18 +49,18 @@ public class HandlerBox {
     private ApplicationContext appContext;
 
     /**
-     * 请求对象与handler对应Map
+     * Request与Handler映射Map
      */
     private final ConcurrentMap<Class<EcologyRequest>, EcologyRequestHandler> requestHandlerMap;
 
     /**
-     * handler与响应对象对应Map
+     * Request与Response映射Map
      */
-    private final ConcurrentMap<EcologyRequestHandler, Class<EcologyResponse>> handlerResponseMap;
+    private final ConcurrentMap<Class<EcologyRequest>, Class<EcologyResponse>> requestResponseMap;
 
     public HandlerBox() {
         requestHandlerMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
-        handlerResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
+        requestResponseMap = new ConcurrentHashMap<>(Constant.INIT_CAPACITY);
     }
 
     /**
@@ -73,7 +74,6 @@ public class HandlerBox {
     /**
      * 初始化Map
      */
-    @SuppressWarnings({"rawtypes"})
     private void initRequestResponseHandlerMap() {
         Map<String, EcologyRequestHandler> handlerMap = appContext.getBeansOfType(EcologyRequestHandler.class);
         if (MapUtils.isEmpty(handlerMap)) {
@@ -128,7 +128,6 @@ public class HandlerBox {
      * @param handler Handler对象
      * @param method  handle方法
      */
-    @SuppressWarnings({"unchecked"})
     private <H extends EcologyRequestHandler<?, ?>> void buildRequestResponseHandlerMap(H handler, Method method) {
         if (!isHandleMethod(method)) {
             return;
@@ -139,24 +138,27 @@ public class HandlerBox {
         // Handler:Request=1:1 and Request:Handler=1:1
         requestHandlerMap.compute(requestClass, (k, v) -> {
             if (null != v) {
-                String format = "The handler can not repeat bind request,handler = %s,request = %s";
+                String format = "The request can not repeat bind handler,request = %s,handler = %s";
                 String tip = String.format(format, k.getSimpleName(), v.getClass().getSimpleName());
                 log.error(tip);
-                throw new HandlerRepeatBindException(tip);
+                throw new RequestRepeatBindException(tip);
             }
             return handler;
         });
         // Request:Response=1:1 and Response:Request=1:1
-        handlerResponseMap.compute(handler, (k, v) -> {
+        requestResponseMap.compute(requestClass, (k, v) -> {
             if (null != v) {
-                throw new HandlerRepeatBindException("The handler can not repeat bind response.");
+                String format = "The request can not repeat bind response,request = %s,response = %s";
+                String tip = String.format(format, k.getSimpleName(), v.getSimpleName());
+                log.error(tip);
+                throw new RequestRepeatBindException(tip);
             }
             return responseClass;
         });
     }
 
     /**
-     * 获取RequestHandlerMap
+     * 获取 RequestHandlerMap
      *
      * @return {@link ConcurrentMap}
      */
@@ -165,11 +167,11 @@ public class HandlerBox {
     }
 
     /**
-     * 获取HandlerResponseMap
+     * 获取 RequestResponseMap
      *
      * @return {@link ConcurrentMap}
      */
-    public ConcurrentMap<EcologyRequestHandler, Class<EcologyResponse>> getHandlerResponseMap() {
-        return handlerResponseMap;
+    public ConcurrentMap<Class<EcologyRequest>, Class<EcologyResponse>> getRequestResponseMap() {
+        return requestResponseMap;
     }
 }
