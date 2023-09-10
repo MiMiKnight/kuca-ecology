@@ -14,9 +14,9 @@ public class HandlerFilterChainFactory {
     /**
      * 获取过滤器链
      *
-     * @return {@link HandlerFilterChain}
+     * @return {@link ApplicationHandlerFilterChain}
      */
-    public static HandlerFilterChain getFilterChain() {
+    public static ApplicationHandlerFilterChain getFilterChain() {
         return new ApplicationHandlerFilterChain();
     }
 }

@@ -3,6 +3,7 @@ package com.github.mimiknight.kuca.ecology.filter;
 import com.github.mimiknight.kuca.ecology.handler.EcologyRequestHandler;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,6 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
         this.handler.handle(request, response);
     }
 
-    @Override
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>,
@@ -50,8 +50,6 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
         this.filters.add(filter);
     }
 
-
-    @Override
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>,
@@ -59,10 +57,31 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
         this.filters.addAll(filters);
     }
 
-    @Override
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>> void setTarget(H target) {
         this.handler = target;
+    }
+
+    /**
+     * 初始化过滤器链
+     *
+     * @param <Q>     接口入参泛型
+     * @param <P>     接口出参泛型
+     * @param <H>     业务处理器泛型
+     * @param <F>     过滤器泛型
+     * @param handler 接口业务处理器
+     * @param filters 接口过滤器接口
+     */
+    public <Q extends EcologyRequest,
+            P extends EcologyResponse,
+            H extends EcologyRequestHandler<Q, P>,
+            F extends EcologyHandlerFilter<Q, P, H>> void init(H handler, List<F> filters) {
+        // 设置目标对象
+        this.setTarget(handler);
+        // 设置过滤器
+        if (CollectionUtils.isNotEmpty(filters)) {
+            this.addFilter(filters);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.github.mimiknight.kuca.ecology.core;
 
+import com.github.mimiknight.kuca.ecology.filter.ApplicationHandlerFilterChain;
 import com.github.mimiknight.kuca.ecology.filter.EcologyHandlerFilter;
 import com.github.mimiknight.kuca.ecology.filter.HandlerFilterBox;
 import com.github.mimiknight.kuca.ecology.filter.HandlerFilterChain;
@@ -42,7 +43,7 @@ public class HandlerFilterExecutor {
         // 获取过滤器
         List<EcologyHandlerFilter> filters = handlerFilterBox.getHandlerFilterByKey(requestClass);
         // 获取过滤器链
-        HandlerFilterChain filterChain = HandlerFilterChainFactory.getFilterChain();
+        ApplicationHandlerFilterChain filterChain = HandlerFilterChainFactory.getFilterChain();
         // 初始化过滤器链参数
         filterChain.init(handler, filters);
         // 执行过滤器
