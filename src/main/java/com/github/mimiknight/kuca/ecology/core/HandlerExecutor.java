@@ -7,7 +7,6 @@ import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,16 +33,15 @@ public class HandlerExecutor {
      *
      * @param <Q>     请求参数泛型
      * @param <P>     响应参数泛型
-     * @param <B>     接口响应Body泛型
      * @param <H>     处理器泛型
      * @param request 请求参数对象
      * @return {@link P} 响应
      * @throws Exception 异常
      */
     @SuppressWarnings({"unchecked"})
-    public <Q extends EcologyRequest, B,
+    public <Q extends EcologyRequest,
             P extends EcologyResponse,
-            H extends EcologyRequestHandler<Q, P>> ResponseEntity<B> execute(Q request) throws Exception {
+            H extends EcologyRequestHandler<Q, P>> P execute(Q request) throws Exception {
         // 通过请求参数Class获取handler
         H handler = (H) handlerBox.getRequestHandlerMap().get(request.getClass());
         if (null == handler) {
@@ -59,7 +57,6 @@ public class HandlerExecutor {
      *
      * @param <Q>     请求参数泛型
      * @param <P>     响应参数泛型
-     * @param <B>     接口响应Body泛型
      * @param <H>     处理器泛型
      * @param request 请求参数对象
      * @param handler 处理器对象
@@ -67,9 +64,9 @@ public class HandlerExecutor {
      * @throws Exception 异常
      */
     @SuppressWarnings({"unchecked"})
-    public <Q extends EcologyRequest, B,
+    public <Q extends EcologyRequest,
             P extends EcologyResponse,
-            H extends EcologyRequestHandler<Q, P>> ResponseEntity<B> execute(Q request, H handler) throws Exception {
+            H extends EcologyRequestHandler<Q, P>> P execute(Q request, H handler) throws Exception {
 
         Class<?> responseClass = handlerBox.getRequestResponseMap().get(request.getClass());
         if (null == responseClass) {
@@ -82,7 +79,7 @@ public class HandlerExecutor {
         // 执行业务逻辑
         doService(request, response, handler);
         // 构建成功响应
-        return ResponseBuilder.build(response);
+        return response;
     }
 
     /**
