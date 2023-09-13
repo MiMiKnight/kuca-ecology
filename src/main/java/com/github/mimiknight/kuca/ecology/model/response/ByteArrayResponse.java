@@ -13,5 +13,5 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ByteArrayResponse extends BaseResponse<byte[]> {
+public final class ByteArrayResponse extends BaseResponse<byte[]> {
 }

@@ -14,5 +14,5 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
  */
 @Getter
 @Setter
-public class StreamingResponse extends BaseResponse<StreamingResponseBody> {
+public final class StreamingResponse extends BaseResponse<StreamingResponseBody> {
 }
