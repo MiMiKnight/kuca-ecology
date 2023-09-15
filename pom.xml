@@ -8,14 +8,14 @@
     <parent>
         <groupId>com.github.mimiknight.kuca</groupId>
         <artifactId>kuca-parent-spring-boot-starter</artifactId>
-        <version>0.0.1-SNAPSHOT-jdk8</version>
+        <version>jdk8-2023.9.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <!--本工程-->
     <groupId>com.github.mimiknight.kuca</groupId>
     <artifactId>kuca-ecology-spring-boot-starter</artifactId>
-    <version>0.0.1-SNAPSHOT-jdk8</version>
+    <version>jdk8-2023.9.1</version>
     <packaging>jar</packaging>
     <name>kuca-ecology-spring-boot-starter</name>
     <description>kuca-ecology-spring-boot-starter</description>
@@ -24,19 +24,23 @@
         <connection>https://github.com/MiMiKnight/kuca-ecology-spring-boot-starter/tree/dev_jdk8</connection>
         <developerConnection>https://github.com/MiMiKnight</developerConnection>
         <url>https://github.com/MiMiKnight/kuca-ecology-spring-boot-starter</url>
-        <tag>0.0.1-SNAPSHOT-jdk8</tag>
+        <tag>jdk8-2023.9.1</tag>
     </scm>
 
     <!--版本管理-->
     <properties>
         <!--项目编码-->
         <project.encoding>UTF-8</project.encoding>
+        <!--JDK 最低运行版本-->
+        <jdk.min.version>1.8.0-202</jdk.min.version>
+        <!--JDK 最低运行版本-->
+        <jdk.max.version>1.8.0-202</jdk.max.version>
         <!--Maven 最低运行版本-->
-        <maven.version>3.8.0</maven.version>
-        <!--OracleJDK 最低运行版本-->
-        <jdk.version>1.8.0_371</jdk.version>
-        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
+        <maven.min.version>3.9.0</maven.min.version>
+        <!--Maven 最高运行版本-->
+        <maven.max.version>3.9.4</maven.max.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.version>8</maven.compiler.version>
@@ -103,6 +107,37 @@
     <!--build-->
     <build>
         <plugins>
+            <!--maven-enforcer-plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>display-info</goal>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--规则检查不通过就构建失败;Default:false-->
+                    <failFast>true</failFast>
+                    <rules>
+                        <!--Maven最低版本-->
+                        <requireMavenVersion>
+                            <!--[min,max]-->
+                            <version>[${maven.min.version},${maven.max.version}]</version>
+                        </requireMavenVersion>
+                        <!--JDK最低版本-->
+                        <requireJavaVersion>
+                            <!--[min,max]-->
+                            <version>[${jdk.min.version},${jdk.max.version}]</version>
+                        </requireJavaVersion>
+                    </rules>
+                </configuration>
+            </plugin>
             <!--maven-compiler-plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -164,43 +199,6 @@
                     <encoding>UTF-8</encoding>
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
-                </configuration>
-            </plugin>
-            <!--maven-enforcer-plugin-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>enforce</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>display-info</goal>
-                            <goal>enforce</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!--规则检查不通过就构建失败;Default:false-->
-                    <failFast>true</failFast>
-                    <rules>
-                        <!--Maven最低版本-->
-                        <requireMavenVersion>
-                            <version>${maven.version}</version>
-                        </requireMavenVersion>
-                        <!--JDK最低版本-->
-                        <requireJavaVersion>
-                            <version>${jdk.version}</version>
-                        </requireJavaVersion>
-                        <bannedDependencies>
-                            <!--是否检查传递性依赖(间接依赖)-->
-                            <searchTransitive>true</searchTransitive>
-                            <excludes>
-                                <exclude>junit:junit</exclude>
-                            </excludes>
-                            <message>must use TestNG</message>
-                        </bannedDependencies>
-                    </rules>
                 </configuration>
             </plugin>
 
