@@ -45,15 +45,13 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
 
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
-            H extends EcologyRequestHandler<Q, P>,
-            F extends EcologyHandlerFilter<Q, P, H>> void addFilter(F filter) {
+            F extends EcologyHandlerFilter<Q, P>> void addFilter(F filter) {
         this.filters.add(filter);
     }
 
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
-            H extends EcologyRequestHandler<Q, P>,
-            F extends EcologyHandlerFilter<Q, P, H>> void addFilter(List<F> filters) {
+            F extends EcologyHandlerFilter<Q, P>> void addFilter(List<F> filters) {
         this.filters.addAll(filters);
     }
 
@@ -76,7 +74,7 @@ public class ApplicationHandlerFilterChain implements HandlerFilterChain {
     public <Q extends EcologyRequest,
             P extends EcologyResponse,
             H extends EcologyRequestHandler<Q, P>,
-            F extends EcologyHandlerFilter<Q, P, H>> void init(H handler, List<F> filters) {
+            F extends EcologyHandlerFilter<Q, P>> void init(H handler, List<F> filters) {
         // 设置目标对象
         this.setTarget(handler);
         // 设置过滤器

@@ -1,6 +1,5 @@
 package com.github.mimiknight.kuca.ecology.filter;
 
-import com.github.mimiknight.kuca.ecology.handler.EcologyRequestHandler;
 import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import org.springframework.core.Ordered;
@@ -11,7 +10,7 @@ import org.springframework.core.Ordered;
  * @author MiMiKnight victor2015yhm@gmail.com
  * @since 2023-09-09 00:10:12
  */
-public interface EcologyHandlerFilter<Q extends EcologyRequest, P extends EcologyResponse, H extends EcologyRequestHandler<Q, P>> extends Ordered {
+public interface EcologyHandlerFilter<Q extends EcologyRequest, P extends EcologyResponse> extends Ordered {
 
     /**
      * 初始化方法

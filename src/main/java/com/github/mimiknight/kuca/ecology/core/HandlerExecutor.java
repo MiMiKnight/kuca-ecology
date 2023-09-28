@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
  * @since 2023-02-28 21:23:05
  */
 @Slf4j
-@Component
 public class HandlerExecutor {
 
     @Autowired

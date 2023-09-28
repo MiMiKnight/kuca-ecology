@@ -6,6 +6,7 @@ import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.util.Assert;
  * @author victor2015yhm@gmail.com
  * @since 2022-09-05 01:15:27
  */
+@Component
 @Slf4j
 public abstract class EcologyHandleController {
     @Autowired
