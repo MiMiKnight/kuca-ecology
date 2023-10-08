@@ -7,23 +7,23 @@
     <!--父工程-->
     <parent>
         <groupId>com.github.mimiknight.kuca</groupId>
-        <artifactId>kuca-parent-spring-boot-starter</artifactId>
+        <artifactId>kuca-parent</artifactId>
         <version>jdk8-2023.9.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <!--本工程-->
     <groupId>com.github.mimiknight.kuca</groupId>
-    <artifactId>kuca-ecology-spring-boot-starter</artifactId>
+    <artifactId>kuca-ecology</artifactId>
     <version>jdk8-2023.9.1</version>
     <packaging>jar</packaging>
-    <name>kuca-ecology-spring-boot-starter</name>
-    <description>kuca-ecology-spring-boot-starter</description>
+    <name>kuca-ecology</name>
+    <description>kuca-ecology</description>
 
     <scm>
-        <connection>https://github.com/MiMiKnight/kuca-ecology-spring-boot-starter/tree/dev_jdk8</connection>
+        <connection>https://github.com/MiMiKnight/kuca-ecology/tree/dev_jdk8</connection>
         <developerConnection>https://github.com/MiMiKnight</developerConnection>
-        <url>https://github.com/MiMiKnight/kuca-ecology-spring-boot-starter</url>
+        <url>https://github.com/MiMiKnight/kuca-ecology</url>
         <tag>jdk8-2023.9.1</tag>
     </scm>
 
@@ -31,6 +31,8 @@
     <properties>
         <!--项目编码-->
         <project.encoding>UTF-8</project.encoding>
+        <!--jdk.vendor-->
+        <jdk.vendor>Oracle Corporation</jdk.vendor>
         <!--JDK 最低运行版本-->
         <jdk.min.version>1.8.0-202</jdk.min.version>
         <!--JDK 最低运行版本-->
@@ -135,6 +137,12 @@
                             <!--[min,max]-->
                             <version>[${jdk.min.version},${jdk.max.version}]</version>
                         </requireJavaVersion>
+                        <!--JDK厂商-->
+                        <requireJavaVendor>
+                            <includes>
+                                <include>${jdk.vendor}</include>
+                            </includes>
+                        </requireJavaVendor>
                     </rules>
                 </configuration>
             </plugin>
@@ -179,26 +187,6 @@
                 </executions>
                 <configuration>
                     <attach>true</attach>
-                </configuration>
-            </plugin>
-            <!--maven-javadoc-plugin-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-javadoc</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>javadoc-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <attach>true</attach>
-                    <encoding>UTF-8</encoding>
-                    <charset>UTF-8</charset>
-                    <docencoding>UTF-8</docencoding>
                 </configuration>
             </plugin>
 
