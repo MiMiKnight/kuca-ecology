@@ -5,9 +5,10 @@ import com.github.mimiknight.kuca.ecology.model.request.EcologyRequest;
 import com.github.mimiknight.kuca.ecology.model.response.BaseResponse;
 import com.github.mimiknight.kuca.ecology.model.response.EcologyResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 
 /**
@@ -16,14 +17,21 @@ import org.springframework.util.Assert;
  * @author victor2015yhm@gmail.com
  * @since 2022-09-05 01:15:27
  */
-@Component
 @Slf4j
-public abstract class EcologyHandleController {
-    @Autowired
+public abstract class EcologyHandleController implements ApplicationContextAware, InitializingBean {
     private ApplicationContext appContext;
 
-    @Autowired
     private HandlerExecutor handlerExecutor;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.appContext = applicationContext;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.handlerExecutor = appContext.getBean(HandlerExecutor.class);
+    }
 
     /**
      * 处理方法
